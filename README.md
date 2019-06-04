@@ -1,0 +1,17 @@
+# Database Course Design服务器端代码
+
+## 先决条件
+
+若在服务器上部署此代码，则需满足以下先决条件：
+
+1. 与目标Oracle数据库版本相容的Oracle Instant Client
+2. Go语言运行时
+
+注：请考虑Oracle Instant Client版本与Oracle Database的兼容性。测试时发现Oracle 11gR2与Instant Client>=19.3不兼容。
+
+## 部署
+
+@TODO 补充部署过程
+
+1. `go get <github-repo-url>`
+2. 将`config.go.example`重命名为`config.go`，并根据实际情况修改文件中的信息。

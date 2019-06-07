@@ -14,7 +14,7 @@ func main() {
 		fmt.Println(err)
 		return
     }
-	defer db.Close()	
+	defer db.Close()
 
     rows, err := db.Query("select 2+2 from dual")
     if err != nil {

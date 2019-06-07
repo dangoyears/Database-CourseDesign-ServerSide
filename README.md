@@ -27,3 +27,11 @@ server {
     }
 }
 ```
+
+## 启动和终止
+
+```sh
+$ netstat -ap | grep 12323
+tcp        0      0 127.0.0.1:12323         0.0.0.0:*               LISTEN      4639/dbcd
+$ kill 4639
+```

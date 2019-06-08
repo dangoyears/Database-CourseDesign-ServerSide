@@ -28,7 +28,7 @@ func appendStatus(json *gin.H, statusCode int, statusText string) {
 }
 
 func appendSuccessfulStatus(json *gin.H) {
-	appendStatus(json, 0, "成功。这是一个临时路由，写入的数据不会真正保存(*^_^*)")
+	appendStatus(json, 0, "成功。这是一个临时路由，数据的写操作不会真正生效(*^_^*)")
 }
 
 func appendFailureStatus(json *gin.H) {
@@ -85,10 +85,9 @@ func main() {
 				"sum":       "41",
 			},
 		}
+		response["data"] = data
 
-		c.JSON(200, gin.H{
-			"data": data,
-		})
+		c.JSON(200, response)
 	})
 
 	r.Run("localhost:12323")

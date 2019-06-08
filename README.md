@@ -13,7 +13,7 @@
 
 @TODO 补充部署过程
 
-1. `go get <github-repo-url>`
+1. `go get github.com/dangoyears/Database-CourseDesign-ServerSide`
 2. 将`config.go.example`重命名为`config.go`，并根据实际情况修改文件中的信息。
 
 ### 使用Nginx设置反向代理

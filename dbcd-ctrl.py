@@ -6,6 +6,23 @@ from subprocess import call
 from subprocess import run
 
 
+def update():
+    call(['git', 'pull'])
+
+
+def start():
+    run(['screen', 'go run dbcd.go'])
+
+
+def kill():
+    call(['killall', 'dbcd'])
+
+
+def restart():
+    kill()
+    start()
+
+
 def main():
     parser = ArgumentParser(description='The script controls the status of D̲atab̲ase C̲ourse D̲esign server.')
     
@@ -27,20 +44,19 @@ def main():
     args = parser.parse_args()
 
     if args.update:
-        call('git pull')
+        update()
         return
 
     if args.start:
-        run('screen go run dbcd.go')
+        start()
         return
 
     if args.kill:
-        call('killall dbcd')
+        kill()
         return
 
     if args.restart:
-        call('killall dbcd')
-        run('screen go run dbcd.go')
+        restart()
         return
 
 

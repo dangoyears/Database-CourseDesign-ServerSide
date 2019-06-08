@@ -11,7 +11,7 @@ def update():
 
 
 def start():
-    run(['screen', 'go run dbcd.go'])
+    run(['screen', 'go', 'run', 'dbcd.go'])
 
 
 def kill():

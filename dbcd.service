@@ -1,0 +1,8 @@
+[Unit]
+Description=Database Course Design Server
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/go/src/github.com/dangoyears/Database-CourseDesign-ServerSide
+ExecStart=/bin/python3 dbcd-ctrl.py --start

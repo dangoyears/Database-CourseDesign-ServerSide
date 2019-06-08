@@ -40,8 +40,8 @@ func main() {
 
 	r.Use(cors.Default())
 
-	var response = make(gin.H)
 	r.GET("/login", func(c *gin.Context) {
+		var response = make(gin.H)
 		var human Human
 
 		if (c.ShouldBind(&human)) == nil && human.Password == "dangoyears" {
@@ -56,16 +56,19 @@ func main() {
 	})
 
 	r.GET("/write/college", func(c *gin.Context) {
+		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		c.JSON(200, response)
 	})
 
 	r.POST("/write/college", func(c *gin.Context) {
+		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		c.JSON(200, response)
 	})
 
 	r.GET("/read/college", func(c *gin.Context) {
+		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		var data = []gin.H{
 			{

@@ -1,3 +1,5 @@
+.vscode
+
 # 脱敏
 config.go
 !config.go.example

@@ -28,7 +28,7 @@ func appendStatus(json *gin.H, statusCode int, statusText string) {
 }
 
 func appendSuccessfulStatus(json *gin.H) {
-	appendStatus(json, 0, "成功。")
+	appendStatus(json, 0, "成功。这是一个临时路由，写入的数据不会真正保存(*^_^*)")
 }
 
 func appendFailureStatus(json *gin.H) {

@@ -60,6 +60,11 @@ func main() {
 		c.JSON(200, response)
 	})
 
+	r.POST("/write/college", func(c *gin.Context) {
+		appendSuccessfulStatus(&response)
+		c.JSON(200, response)
+	})
+
 	r.GET("/read/college", func(c *gin.Context) {
 		appendSuccessfulStatus(&response)
 		var data = []gin.H{

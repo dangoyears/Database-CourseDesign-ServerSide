@@ -1,4 +1,4 @@
-package model
+package data
 
 type Human struct {
 	Username string `form:"name"`

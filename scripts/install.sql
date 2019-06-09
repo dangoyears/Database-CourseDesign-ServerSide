@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/8 16:48:11                            */
+/* Created on:     2019/6/9 21:40:27                            */
 /*==============================================================*/
 
 
@@ -228,12 +228,14 @@ create index "CoureTakesPlaceInClassroom_FK" on "CourseProgram" (
 create table "Human" 
 (
    "HumanID"            INTEGER              not null,
-   "HName"              VARCHAR2(32)         not null,
-   "HSex"               CHAR(1)              not null
-      constraint CKC_HSEX_HUMAN check ("HSex" in ('男','女')),
-   "HBirthday"          DATE,
-   "HIdentity"          CHAR(18),
-   "HNotes"             CLOB,
+   "Name"               VARCHAR2(32)         not null,
+   "Sex"                CHAR(1)              not null
+      constraint CKC_SEX_HUMAN check ("Sex" in ('男','女')),
+   "Birthday"           DATE,
+   "Identity"           CHAR(18),
+   "Notes"              CLOB,
+   "Username"           VARCHAR2(32),
+   "PasswordHash"       VARCHAR2(1024),
    constraint PK_HUMAN primary key ("HumanID")
 );
 
@@ -279,6 +281,7 @@ create table "Student"
    "CollegeID"          INTEGER              not null,
    "SpecialtyID"        INTEGER              not null,
    "StudentNumber"      INTEGER              not null,
+   "Enrollment"         DATE,
    constraint PK_STUDENT primary key ("HumanID"),
    constraint AK_STUDENTNUMBER_STUDENT unique ("StudentNumber")
 );

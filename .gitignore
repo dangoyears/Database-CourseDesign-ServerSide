@@ -1,5 +1,6 @@
+# 用户个人配置
 .vscode
 
-# 脱敏
-config.go
-!config.go.example
+# 敏感信息
+config.yaml
+!config.example.yaml

@@ -1,5 +1,0 @@
-package main
-
-// connectString Oracle连接字符串
-// 参见 <https://github.com/go-goracle/goracle/#connect>
-const connectString string = "oracle://user:password@host/sid"

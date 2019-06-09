@@ -1,0 +1,2 @@
+# 有关Oracle连接字符串，请参阅<https://github.com/go-goracle/goracle/#connect>
+OracleConnectString: oracle://user:password@host/sid

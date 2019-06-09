@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -19,8 +18,19 @@ type configuation struct {
 	OracleConnectString string `yaml:"OracleConnectString"`
 }
 
-func loadConfiguration() configuation {
-	var config configuation
+var (
+	config configuation
+	db     *sql.DB
+	router *gin.Engine
+)
+
+func main() {
+	loadConfiguration()
+	connectDatabase()
+	establishRouter()
+}
+
+func loadConfiguration() {
 	configYaml, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
 		log.Fatalln(err)
@@ -29,52 +39,27 @@ func loadConfiguration() configuation {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	return config
 }
 
-func appendStatus(json *gin.H, statusCode int, statusText string) {
-	(*json)["statusCode"] = statusCode
-	(*json)["statusText"] = statusText
-}
-
-func appendSuccessfulStatus(json *gin.H) {
-	appendStatus(json, 0, "成功。这是一个临时路由，数据的写操作不会真正生效(*^_^*)")
-}
-
-func appendFailureStatus(json *gin.H) {
-	appendStatus(json, -1, "失败。")
-}
-
-func main() {
-	config := loadConfiguration()
-
-	db, err := sql.Open("goracle", config.OracleConnectString)
+func connectDatabase() {
+	var err error
+	db, err = sql.Open("goracle", config.OracleConnectString)
 
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatalln(err)
 	}
-	defer db.Close()
-
-	rows, err := db.Query("select 2+2 from dual")
+	err = db.Ping()
 	if err != nil {
-		fmt.Println("Error fetching addition")
-		fmt.Println(err)
-		return
+		log.Fatalln(err)
 	}
-	defer rows.Close()
+}
 
-	for rows.Next() {
-		var sum int
-		rows.Scan(&sum)
-		fmt.Printf("2 + 2 always equals: %d\n", sum)
-	}
+func establishRouter() {
+	router = gin.Default()
 
-	r := gin.Default()
+	router.Use(cors.Default())
 
-	r.Use(cors.Default())
-
-	r.GET("/login", func(c *gin.Context) {
+	router.GET("/login", func(c *gin.Context) {
 		var response = make(gin.H)
 		var human model.Human
 
@@ -89,19 +74,19 @@ func main() {
 		c.JSON(200, response)
 	})
 
-	r.GET("/write/college", func(c *gin.Context) {
+	router.GET("/write/college", func(c *gin.Context) {
 		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		c.JSON(200, response)
 	})
 
-	r.POST("/write/college", func(c *gin.Context) {
+	router.POST("/write/college", func(c *gin.Context) {
 		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		c.JSON(200, response)
 	})
 
-	r.GET("/read/college", func(c *gin.Context) {
+	router.GET("/read/college", func(c *gin.Context) {
 		var response = make(gin.H)
 		appendSuccessfulStatus(&response)
 		var data = []gin.H{
@@ -132,5 +117,18 @@ func main() {
 		c.JSON(200, response)
 	})
 
-	r.Run("localhost:12323")
+	router.Run("localhost:12323")
+}
+
+func appendStatus(json *gin.H, statusCode int, statusText string) {
+	(*json)["statusCode"] = statusCode
+	(*json)["statusText"] = statusText
+}
+
+func appendSuccessfulStatus(json *gin.H) {
+	appendStatus(json, 0, "成功。这是一个临时路由，数据的写操作不会真正生效(*^_^*)")
+}
+
+func appendFailureStatus(json *gin.H) {
+	appendStatus(json, -1, "失败。")
 }

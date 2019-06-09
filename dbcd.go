@@ -8,7 +8,7 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/dangoyears/Database-CourseDesign-Serverside/model"
+	"github.com/dangoyears/Database-CourseDesign-ServerSide/model"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

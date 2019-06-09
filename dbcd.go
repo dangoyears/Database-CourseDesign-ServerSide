@@ -5,19 +5,21 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/dangoyears/Database-CourseDesign-ServerSide/engine"
+	"github.com/dangoyears/Database-CourseDesign-ServerSide/dbcd"
 	_ "gopkg.in/goracle.v2"
 	"gopkg.in/yaml.v2"
 )
 
+// 从config.yaml中加载配置文件并验证内容，
+// 随后启动数据处理引擎
 func main() {
 	config := loadConfiguration()
 	verifyConfiguration(config)
-	engine := engine.NewEngine(config)
+	engine := dbcd.NewEngine(config)
 	engine.Run()
 }
 
-func loadConfiguration() (config engine.Configuration) {
+func loadConfiguration() (config dbcd.EngineConfiguration) {
 	configYaml, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
 		log.Fatalln(err)
@@ -29,7 +31,7 @@ func loadConfiguration() (config engine.Configuration) {
 	return config
 }
 
-func verifyConfiguration(config engine.Configuration) {
+func verifyConfiguration(config dbcd.EngineConfiguration) {
 	db, err := sql.Open("goracle", config.OracleConnectString)
 	defer db.Close()
 

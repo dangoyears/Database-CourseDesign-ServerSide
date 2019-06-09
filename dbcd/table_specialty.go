@@ -1,4 +1,4 @@
-package data
+package dbcd
 
 type Specicalty struct {
 	Name string

@@ -1,4 +1,4 @@
-package engine
+package dbcd
 
 import (
 	"database/sql"
@@ -9,19 +9,22 @@ import (
 
 	// goracle.v2 Oracle数据库驱动
 	_ "gopkg.in/goracle.v2"
-
-	"github.com/dangoyears/Database-CourseDesign-ServerSide/data"
 )
 
 // Engine 数据处理引擎
 type Engine struct {
-	config Configuration
+	config EngineConfiguration
 	db     *sql.DB
 	router *gin.Engine
 }
 
+// EngineConfiguration 数据处理引擎配置
+type EngineConfiguration struct {
+	OracleConnectString string `yaml:"OracleConnectString"`
+}
+
 // NewEngine 建立数据处理引擎
-func NewEngine(config Configuration) Engine {
+func NewEngine(config EngineConfiguration) Engine {
 	var engine Engine
 	engine.setupConfiguration(config)
 	engine.establishDB()
@@ -30,7 +33,7 @@ func NewEngine(config Configuration) Engine {
 	return engine
 }
 
-func (engine *Engine) setupConfiguration(config Configuration) {
+func (engine *Engine) setupConfiguration(config EngineConfiguration) {
 	engine.config = config
 }
 
@@ -45,8 +48,8 @@ func (engine *Engine) establishDB() {
 	}
 }
 
-func (engine Engine) testDB() {
-	data.TestInsertIntoAcademicYear(engine.db)
+func (engine *Engine) testDB() {
+	TestInsertIntoAcademicYear(engine.db)
 }
 
 func (engine *Engine) establishRouter() {
@@ -60,7 +63,7 @@ func (engine *Engine) establishRouter() {
 	engine.router.Run("localhost:12323")
 }
 
-// Start 启动数据处理引擎
+// Run 启动数据处理引擎
 func (engine *Engine) Run() {
 	engine.router.Run("localhost:12323")
 }

@@ -1,4 +1,4 @@
-package data
+package dbcd
 
 type Human struct {
 	Username string `form:"name"`

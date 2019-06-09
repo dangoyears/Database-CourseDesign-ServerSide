@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/dangoyears/Database-CourseDesign-ServerSide/model"
+	"github.com/dangoyears/Database-CourseDesign-ServerSide/data"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +10,7 @@ func nouse() {
 
 	router.GET("/login", func(c *gin.Context) {
 		var response = make(gin.H)
-		var human model.Human
+		var human data.Human
 
 		if (c.ShouldBind(&human)) == nil && human.Password == "dangoyears" {
 			appendSuccessfulStatus(&response)

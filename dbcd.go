@@ -14,7 +14,7 @@ func main() {
 	config := loadConfiguration()
 	verifyConfiguration(config)
 	engine := engine.NewEngine(config)
-	engine.Start()
+	engine.Run()
 }
 
 func loadConfiguration() (config engine.Configuration) {

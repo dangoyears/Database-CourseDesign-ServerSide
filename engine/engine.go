@@ -23,16 +23,15 @@ type Engine struct {
 // NewEngine 建立数据处理引擎
 func NewEngine(config Configuration) Engine {
 	var engine Engine
-	engine.config = config
-	return engine
-}
-
-// Start 启动数据处理引擎
-func (engine *Engine) Start() {
+	engine.setupConfiguration(config)
 	engine.establishDB()
 	engine.testDB()
 	engine.establishRouter()
-	engine.router.Run("localhost:12323")
+	return engine
+}
+
+func (engine *Engine) setupConfiguration(config Configuration) {
+	engine.config = config
 }
 
 func (engine *Engine) establishDB() {
@@ -46,6 +45,10 @@ func (engine *Engine) establishDB() {
 	}
 }
 
+func (engine Engine) testDB() {
+	data.TestInsertIntoAcademicYear(engine.db)
+}
+
 func (engine *Engine) establishRouter() {
 	engine.router = gin.New()
 	engine.router.Use(gin.Logger())
@@ -57,6 +60,7 @@ func (engine *Engine) establishRouter() {
 	engine.router.Run("localhost:12323")
 }
 
-func (engine Engine) testDB() {
-	data.TestInsertIntoAcademicYear(engine.db)
+// Start 启动数据处理引擎
+func (engine *Engine) Run() {
+	engine.router.Run("localhost:12323")
 }

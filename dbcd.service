@@ -4,5 +4,6 @@ Description=Database Course Design Server
 [Service]
 Type=simple
 User=root
+Environment="PATH=/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin"
 WorkingDirectory=/root/go/src/github.com/dangoyears/Database-CourseDesign-ServerSide
 ExecStart=/bin/python3 dbcd-ctrl.py --start

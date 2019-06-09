@@ -50,7 +50,7 @@ def update_server():
 
 
 def start_server():
-    Popen(['go', 'run', 'dbcd.go'])
+    call(['go', 'run', 'dbcd.go'])
 
 
 def kill_server():

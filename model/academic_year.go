@@ -9,7 +9,7 @@ type AcademicYear struct {
 	AcademicYear int
 }
 
-func testInsertIntoAcademicYear(db *sql.DB) {
+func TestInsertIntoAcademicYear(db *sql.DB) {
 	var (
 		err      error
 		testYear = 3030

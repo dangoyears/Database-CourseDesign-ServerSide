@@ -9,6 +9,8 @@ import (
 
 	// goracle.v2 Oracle数据库驱动
 	_ "gopkg.in/goracle.v2"
+
+	"github.com/dangoyears/Database-CourseDesign-ServerSide/model"
 )
 
 // Engine 数据处理引擎
@@ -56,5 +58,5 @@ func (engine *Engine) establishRouter() {
 }
 
 func (engine Engine) testDB() {
-	testInsertIntoAcademicYear(engine.db)
+	model.TestInsertIntoAcademicYear(engine.db)
 }

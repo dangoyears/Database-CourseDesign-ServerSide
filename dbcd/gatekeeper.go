@@ -1,5 +1,6 @@
 package dbcd
 
+// GateKeeper 保存用户登陆时的凭证
 type GateKeeper struct {
 	Token2HumanID map[string]string
 }

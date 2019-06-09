@@ -16,6 +16,7 @@ type Engine struct {
 	config EngineConfiguration
 	db     *sql.DB
 	router *gin.Engine
+	keeper GateKeeper
 }
 
 // EngineConfiguration 数据处理引擎配置

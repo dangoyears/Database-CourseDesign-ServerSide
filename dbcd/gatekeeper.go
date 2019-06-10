@@ -13,6 +13,12 @@ type GateKeeper struct {
 	Token2LoginType map[string]string
 }
 
+func NewGateKeeper() *GateKeeper {
+	var keeper GateKeeper
+	keeper.Token2HumanID = make(map[string]string)
+	keeper.Token2LoginType = make(map[string]string)
+	return &keeper
+}
 
 // GenerateToken 返回一个随机生成的32位长度的token
 func (keeper *GateKeeper) GenerateToken() string {
@@ -29,7 +35,7 @@ func (keeper *GateKeeper) GenerateToken() string {
 // LoginAdmin 若传入的用户名和密码正确则返回token
 // 否则返回空字符串
 func (keeper *GateKeeper) LoginAdmin(name, pass string) string {
-	if (name == "dangoyears" && pass == "dangoyears") {  // 硬编码用户名和密码
+	if name == "dangoyears" && pass == "dangoyears" { // 硬编码用户名和密码
 		token := keeper.GenerateToken()
 		keeper.addTokenForLoginType(token, "admin")
 		return token
@@ -64,7 +70,6 @@ func (keeper *GateKeeper) GenerateAndValidTokenForHumanLogin() string {
 func (keeper *GateKeeper) RemoveTokenForHumanLogin(token string) {
 
 }
-
 
 func (keeper *GateKeeper) addTokenForHumanID(token, humanID string) {
 	keeper.Token2HumanID[token] = humanID

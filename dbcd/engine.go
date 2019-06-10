@@ -16,7 +16,7 @@ type Engine struct {
 	config EngineConfiguration
 	db     *sql.DB
 	router *gin.Engine
-	keeper GateKeeper
+	keeper *GateKeeper
 }
 
 // EngineConfiguration 数据处理引擎配置
@@ -25,13 +25,14 @@ type EngineConfiguration struct {
 }
 
 // NewEngine 建立数据处理引擎
-func NewEngine(config EngineConfiguration) Engine {
+func NewEngine(config EngineConfiguration) *Engine {
 	var engine Engine
 	engine.setupConfiguration(config)
 	engine.establishDB()
 	engine.testDB()
 	engine.establishRouter()
-	return engine
+	engine.establishGateKeeper()
+	return &engine
 }
 
 func (engine *Engine) setupConfiguration(config EngineConfiguration) {
@@ -64,6 +65,10 @@ func (engine *Engine) establishRouter() {
 	engine.router.Use(cors.Default())
 
 	engine.BindRoute("/login", []string{}, engine.getLoginEndpoint())
+}
+
+func (engine *Engine) establishGateKeeper() {
+	engine.keeper = NewGateKeeper()
 }
 
 // Run 启动数据处理引擎。

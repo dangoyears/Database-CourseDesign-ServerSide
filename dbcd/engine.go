@@ -65,6 +65,8 @@ func (engine *Engine) establishRouter() {
 	engine.router.Use(cors.Default())
 
 	engine.BindRoute("/login", []string{}, engine.getLoginEndpoint())
+	engine.BindRoute("/status/login", []string{}, engine.getLoginStatusEndpoint())
+	engine.BindRoute("/logout", []string{}, engine.getLogoutEndpoint())
 }
 
 func (engine *Engine) establishGateKeeper() {

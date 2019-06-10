@@ -7,24 +7,43 @@ import (
 )
 
 type loginParam struct {
-	username string `form:"name"`
-	password string `form:"pass"`
-	userType string `form:"type"`
+	Type  string `form:"type"`  // {"admin", "student", "teacher"}之一
+	Name  string `form:"name"`
+	Pass  string `form:"pass"`
 }
 
-// LoginEndpoint 提供“/login”的路由
-func LoginEndpoint(c *gin.Context) {
-	var response gin.H
-	var param loginParam
+// GetLoginEndpoint 提供“/login”的路由
+func (engine *Engine) getLoginEndpoint() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var response = NewRouterResponse()
+		var param loginParam
 
-	if c.ShouldBind(&param) == nil {
-		if param.userType == "admin" && param.username == "admin" && param.password == "dangoyears" {
-			// 管理员成功登陆
-			c.JSON(http.StatusOK, response)
+		if c.ShouldBind(&param) == nil {
+			name, pass := param.Name, param.Pass
+			var token string
+			switch param.Type {
+			case "admin":
+				token = engine.keeper.LoginAdmin(name, pass)
+			case "student":
+				token = engine.keeper.LoginStudent(name, pass)
+			case "teacher":
+				token = engine.keeper.LoginTeacher(name, pass)
+			}
+			if token != "" {
+				response.Data["token"] = token
+				response.setCodeAndMsg(0, "认证成功。")
+				c.JSON(http.StatusOK, response)
+				return
+			} else {
+				response.Data["token"] = ""
+				response.setCodeAndMsg(1, "认证失败。type、name或pass错误，或者用户不存在。")
+				c.JSON(http.StatusOK, response)
+				return
+			}
 		}
-	}
 
-	// 参数不足
-	response["msg"] = "必须提供name和pass参数。"
-	c.JSON(http.StatusOK, response)
+		// 参数不足
+		response.setCodeAndMsg(-1, "参数不足。必须提供type、name和pass参数。")
+		c.JSON(http.StatusOK, response)
+	}
 }

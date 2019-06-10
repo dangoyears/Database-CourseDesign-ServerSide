@@ -50,7 +50,9 @@ func (engine *Engine) establishDB() {
 }
 
 func (engine *Engine) testDB() {
+	log.Println("Database tests began.")
 	TestInsertIntoAcademicYear(engine.db)
+	log.Println("All database tests finished.")
 }
 
 func (engine *Engine) establishRouter() {
@@ -61,10 +63,10 @@ func (engine *Engine) establishRouter() {
 	// CORS
 	engine.router.Use(cors.Default())
 
-	engine.router.Run("localhost:12323")
+	engine.BindRoute("/login", []string{}, engine.getLoginEndpoint())
 }
 
-// Run 启动数据处理引擎
+// Run 启动数据处理引擎。
 func (engine *Engine) Run() {
 	engine.router.Run("localhost:12323")
 }

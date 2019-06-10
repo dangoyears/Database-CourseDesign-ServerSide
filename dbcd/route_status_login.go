@@ -21,7 +21,7 @@ func (engine *Engine) getLoginStatusEndpoint() gin.HandlerFunc {
 
 			loginType, _ := engine.keeper.getLoginType(token)
 
-			response.Data["role"]
+			response.Data["role"] = loginType
 			response.setCodeAndMsg(0, "已查询。")
 			c.JSON(http.StatusOK, response)
 			return

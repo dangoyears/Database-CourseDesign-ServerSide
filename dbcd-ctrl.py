@@ -3,7 +3,6 @@
 from sys import argv
 from argparse import ArgumentParser
 from subprocess import call
-from subprocess import Popen
 
 
 def main():

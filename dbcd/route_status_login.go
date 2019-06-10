@@ -7,7 +7,7 @@ import (
 )
 
 type loginStatusParam struct {
-	Token string `form:"token"`
+	Token string `form:"token" binding:"required"`
 }
 
 func (engine *Engine) getLoginStatusEndpoint() gin.HandlerFunc {
@@ -19,9 +19,9 @@ func (engine *Engine) getLoginStatusEndpoint() gin.HandlerFunc {
 			token := param.Token
 			engine.keeper.Logoff(token)
 
-			loginType, _ := engine.keeper.getLoginType(token)
+			role := engine.keeper.GetRole(token)
 
-			response.Data["role"] = loginType
+			response.Data["role"] = role
 			response.setCodeAndMsg(0, "已查询。")
 			c.JSON(http.StatusOK, response)
 			return

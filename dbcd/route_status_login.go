@@ -6,27 +6,29 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type logoffParam struct {
+type loginStatusParam struct {
 	Token string `form:"token"`
 }
 
-func (engine *Engine) getLogoutEndpoint() gin.HandlerFunc {
+func (engine *Engine) getLoginStatusEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
-		var param logoffParam
+		var param loginStatusParam
 
 		if c.ShouldBind(&param) == nil {
 			token := param.Token
-
 			engine.keeper.Logoff(token)
 
-			response.setCodeAndMsg(0, "成功退出登陆。")
+			loginType, _ := engine.keeper.getLoginType(token)
+
+			response.Data["role"]
+			response.setCodeAndMsg(0, "已查询。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
-		// 参数不足
-		response.setCodeAndMsg(-1, "参数不足。必须提供token参数。")
+		response.Data["role"] = "anonymous"
+		response.setCodeAndMsg(0, "未登录")
 		c.JSON(http.StatusOK, response)
 	}
 }

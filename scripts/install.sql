@@ -1,8 +1,11 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/9 21:40:27                            */
+/* Created on:     2019/6/10 22:54:17                           */
 /*==============================================================*/
 
+
+alter table "Administrator"
+   drop constraint FK_ADMINIST_HUMANINHE_HUMAN;
 
 alter table "Class"
    drop constraint FK_CLASS_TEACHERMA_TEACHER;
@@ -56,6 +59,8 @@ alter table "TeacherTeachsCourse"
    drop constraint FK_TEACHERT_TEACHERTE_COURSE;
 
 drop table "AcademicYear" cascade constraints;
+
+drop table "Administrator" cascade constraints;
 
 drop index "TeacherMangeClass_FK";
 
@@ -121,6 +126,16 @@ create table "AcademicYear"
 );
 
 /*==============================================================*/
+/* Table: "Administrator"                                       */
+/*==============================================================*/
+create table "Administrator" 
+(
+   "HumanID"            INTEGER              not null,
+   "AdministratorNumber" INTEGER,
+   constraint PK_ADMINISTRATOR primary key ("HumanID")
+);
+
+/*==============================================================*/
 /* Table: "Class"                                               */
 /*==============================================================*/
 create table "Class" 
@@ -175,10 +190,10 @@ create table "Course"
 );
 
 comment on column "Course"."CourseProperty" is
-'1: 专业必修
-2: 专业选修
-3: 通识性选修
-4: 体育选修';
+'1: רҵ����
+2: רҵѡ��
+3: ͨʶ��ѡ��
+4: ����ѡ��';
 
 /*==============================================================*/
 /* Index: "LeadingTeacherLeadsACourse_FK"                       */
@@ -230,7 +245,7 @@ create table "Human"
    "HumanID"            INTEGER              not null,
    "Name"               VARCHAR2(32)         not null,
    "Sex"                CHAR(1)              not null
-      constraint CKC_SEX_HUMAN check ("Sex" in ('男','女')),
+      constraint CKC_SEX_HUMAN check ("Sex" in ('��','Ů')),
    "Birthday"           DATE,
    "Identity"           CHAR(18),
    "Notes"              CLOB,
@@ -251,8 +266,8 @@ create table "Semester"
 );
 
 comment on column "Semester"."SmesterCode" is
-'1: 春季学期
-2: 秋季学期';
+'1: ����ѧ��
+2: �＾ѧ��';
 
 /*==============================================================*/
 /* Index: "AcademicYearHasSemestes_FK"                          */
@@ -382,6 +397,10 @@ create index "TeacherTeachCourse_FK" on "TeacherTeachsCourse" (
 create index "TeacherTeachCourse2_FK" on "TeacherTeachsCourse" (
    "CourseID" ASC
 );
+
+alter table "Administrator"
+   add constraint FK_ADMINIST_HUMANINHE_HUMAN foreign key ("HumanID")
+      references "Human" ("HumanID");
 
 alter table "Class"
    add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("HeadTeacherNumber")

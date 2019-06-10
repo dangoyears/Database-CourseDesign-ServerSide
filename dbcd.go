@@ -11,8 +11,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// 从config.yaml中加载配置并验证，
-// 随后启动数据处理引擎
+// main 是应用程序的入口。
+// 从配置文件config.yaml中加载配置并验证，
+// 随后启动数据处理引擎。
 func main() {
 	config := loadConfiguration()
 	verifyConfiguration(config)

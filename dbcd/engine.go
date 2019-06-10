@@ -24,7 +24,7 @@ type EngineConfiguration struct {
 	OracleConnectString string `yaml:"OracleConnectString"`
 }
 
-// NewEngine 建立数据处理引擎
+// NewEngine 返回数据处理引擎实例。
 func NewEngine(config EngineConfiguration) *Engine {
 	var engine Engine
 	engine.setupConfiguration(config)
@@ -35,10 +35,12 @@ func NewEngine(config EngineConfiguration) *Engine {
 	return &engine
 }
 
+// setupConfiguration 加载配置文件。
 func (engine *Engine) setupConfiguration(config EngineConfiguration) {
 	engine.config = config
 }
 
+// establishDB 建立数据库连接。
 func (engine *Engine) establishDB() {
 	var err error
 	engine.db, err = sql.Open("goracle", engine.config.OracleConnectString)
@@ -50,12 +52,14 @@ func (engine *Engine) establishDB() {
 	}
 }
 
+// testDB 测试数据库功能，包括测试数据库能否正常写入等。
 func (engine *Engine) testDB() {
 	log.Println("Database tests began.")
 	TestInsertIntoAcademicYear(engine.db)
 	log.Println("All database tests finished.")
 }
 
+// establishRouter 建立路。由
 func (engine *Engine) establishRouter() {
 	engine.router = gin.New()
 	engine.router.Use(gin.Logger())

@@ -6,12 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type logoutEndpointParam struct {
-	Token string `form:"token" binding:"required"`
-}
-
 // GetLogoutEndpoint 提供“/logout”的路由。
 func (engine *Engine) GetLogoutEndpoint() gin.HandlerFunc {
+
+	type logoutEndpointParam struct {
+		Token string `form:"token" binding:"required"`
+	}
+
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param logoutEndpointParam

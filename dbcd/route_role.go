@@ -6,12 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type roleEndPointParam struct {
-	Token string `form:"token" binding:"required"`
-}
-
 // GetRoleEndpoint 提供“/role”的路由。
 func (engine *Engine) GetRoleEndpoint() gin.HandlerFunc {
+
+	type roleEndPointParam struct {
+		Token string `form:"token" binding:"required"`
+	}
+
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param roleEndPointParam

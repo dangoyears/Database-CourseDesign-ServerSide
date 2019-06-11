@@ -1,9 +1,9 @@
 package dbcd
 
 import (
-	"sync"
 	"math/rand"
 	"strings"
+	"sync"
 	"time"
 )
 

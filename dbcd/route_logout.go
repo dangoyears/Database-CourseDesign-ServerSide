@@ -7,10 +7,11 @@ import (
 )
 
 type logoffParam struct {
-	Token string `form:"token"`
+	Token string `form:"token" binding:"required"`
 }
 
-func (engine *Engine) getLogoutEndpoint() gin.HandlerFunc {
+// GetLogoutEndpoint 提供“/logout”的路由。
+func (engine *Engine) GetLogoutEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param logoffParam
@@ -20,13 +21,13 @@ func (engine *Engine) getLogoutEndpoint() gin.HandlerFunc {
 
 			engine.keeper.Logoff(token)
 
-			response.setCodeAndMsg(0, "成功退出登陆。")
+			response.SetCodeAndMsg(0, "token已失效。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
 		// 参数不足
-		response.setCodeAndMsg(-1, "参数不足。必须提供token参数。")
+		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的token参数。")
 		c.JSON(http.StatusOK, response)
 	}
 }

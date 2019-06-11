@@ -7,13 +7,13 @@ import (
 )
 
 type loginParam struct {
-	Type string `form:"type"` // {"admin", "student", "teacher"}之一
-	Name string `form:"name"`
-	Pass string `form:"pass"`
+	Type string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
+	Name string `form:"name" binding:"required"`
+	Pass string `form:"pass" binding:"required"`
 }
 
 // GetLoginEndpoint 提供“/login”的路由
-func (engine *Engine) getLoginEndpoint() gin.HandlerFunc {
+func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param loginParam
@@ -33,18 +33,18 @@ func (engine *Engine) getLoginEndpoint() gin.HandlerFunc {
 			response.Data["token"] = token
 
 			if token != "" {
-				response.setCodeAndMsg(0, "认证成功。")
+				response.SetCodeAndMsg(0, "认证成功。")
 				c.JSON(http.StatusOK, response)
 				return
 			}
 
-			response.setCodeAndMsg(1, "认证失败。type、name或pass错误，或者用户不存在。")
+			response.SetCodeAndMsg(1, "认证失败。type、name或pass错误，或者用户不存在。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
 		// 参数不足
-		response.setCodeAndMsg(-1, "参数不足。必须提供type、name和pass参数。")
+		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的type、name和pass参数。")
 		c.JSON(http.StatusOK, response)
 	}
 }

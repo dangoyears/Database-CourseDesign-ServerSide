@@ -10,25 +10,25 @@ type loginStatusParam struct {
 	Token string `form:"token" binding:"required"`
 }
 
-func (engine *Engine) getLoginStatusEndpoint() gin.HandlerFunc {
+// GetStatusLoginEndpoint 提供“/status/login”的路由。
+func (engine *Engine) GetStatusLoginEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param loginStatusParam
 
 		if c.ShouldBind(&param) == nil {
 			token := param.Token
-			engine.keeper.Logoff(token)
 
 			role := engine.keeper.GetRole(token)
 
 			response.Data["role"] = role
-			response.setCodeAndMsg(0, "已查询。")
+			response.SetCodeAndMsg(0, "已查询。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
 		response.Data["role"] = "anonymous"
-		response.setCodeAndMsg(0, "未登录")
+		response.SetCodeAndMsg(-1, "未传入token参数，或传入token为空。")
 		c.JSON(http.StatusOK, response)
 	}
 }

@@ -1,6 +1,7 @@
 package dbcd
 
 import (
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -43,6 +44,9 @@ func (keeper *GateKeeper) LoginAdmin(name, pass string) string {
 	if name == "dangoyears" && pass == "dangoyears" { // 硬编码用户名和密码
 		token := keeper.GenerateToken()
 		keeper.addRoleToken(token, "admin")
+
+		log.Println(token, keeper.Token2Role[token])
+
 		return token
 	}
 	return ""
@@ -70,13 +74,12 @@ func (keeper *GateKeeper) Logoff(token string) {
 }
 
 // GetRole 返回token认证的角色。
-// 当token无效时返回空串。
+// 当token无效时返回"anonymous"。
 func (keeper *GateKeeper) GetRole(token string) string {
 	if role, found := keeper.Token2Role[token]; found {
 		return role
-	} else {
-		return ""
 	}
+	return "anonymous"
 }
 
 // GetHumanID 返回token对应的HumanID。
@@ -84,9 +87,8 @@ func (keeper *GateKeeper) GetRole(token string) string {
 func (keeper *GateKeeper) GetHumanID(token string) string {
 	if humanID, found := keeper.Token2Role[token]; found {
 		return humanID
-	} else {
-		return ""
 	}
+	return ""
 }
 
 // addHumanIDToken 添加可用于验证HumanID的token。

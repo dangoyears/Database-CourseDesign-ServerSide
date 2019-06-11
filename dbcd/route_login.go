@@ -10,9 +10,9 @@ import (
 func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 
 	type loginEndpointParam struct {
-		Type string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
-		Name string `form:"name" binding:"required"`
-		Pass string `form:"pass" binding:"required"`
+		Type     string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
+		Username string `form:"user" binding:"required"`
+		Password string `form:"pass" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
@@ -20,7 +20,7 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 		var param loginEndpointParam
 
 		if c.ShouldBind(&param) == nil {
-			name, pass := param.Name, param.Pass
+			name, pass := param.Username, param.Password
 			var token string
 
 			switch param.Type {

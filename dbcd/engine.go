@@ -59,7 +59,7 @@ func (engine *Engine) testDB() {
 	log.Println("All database tests finished.")
 }
 
-// establishRouter 建立路。由
+// establishRouter 建立路由。
 func (engine *Engine) establishRouter() {
 	engine.router = gin.New()
 	engine.router.Use(gin.Logger())

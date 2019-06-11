@@ -69,8 +69,8 @@ func (engine *Engine) establishRouter() {
 	engine.router.Use(cors.Default())
 
 	engine.BindRoute("/login", []string{}, engine.GetLoginEndpoint())
-	engine.BindRoute("/status/login", []string{}, engine.GetStatusLoginEndpoint())
 	engine.BindRoute("/logout", []string{}, engine.GetLogoutEndpoint())
+	engine.BindRoute("/role", []string{}, engine.GetRoleEndpoint())
 }
 
 func (engine *Engine) establishGateKeeper() {

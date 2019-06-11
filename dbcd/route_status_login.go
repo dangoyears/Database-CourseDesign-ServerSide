@@ -10,8 +10,8 @@ type loginStatusParam struct {
 	Token string `form:"token" binding:"required"`
 }
 
-// GetStatusLoginEndpoint 提供“/status/login”的路由。
-func (engine *Engine) GetStatusLoginEndpoint() gin.HandlerFunc {
+// GetRoleEndpoint 提供“/role”的路由。
+func (engine *Engine) GetRoleEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
 		var param loginStatusParam

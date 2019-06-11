@@ -1,10 +1,7 @@
 package dbcd
 
 import (
-	"math/rand"
-	"strings"
 	"sync"
-	"time"
 )
 
 // GateKeeper 保存用户登陆时的凭证。
@@ -23,47 +20,9 @@ func NewGateKeeper() *GateKeeper {
 	return &keeper
 }
 
-// GenerateToken 返回一个随机生成的32位长度的token。
-func (keeper *GateKeeper) GenerateToken() string {
-	rand.Seed(rand.Int63() + time.Now().UnixNano())
-	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
-	tokenLength := 32
-	var tokenBuilder strings.Builder
-	for i := 0; i < tokenLength; i++ {
-		tokenBuilder.WriteRune(chars[rand.Intn(len(chars))])
-	}
-	token := tokenBuilder.String()
-	return token
-}
-
-// LoginAdmin 若传入的用户名和密码正确则返回token，
-// 否则返回空字符串。
-func (keeper *GateKeeper) LoginAdmin(name, pass string) string {
-	if name == "dangoyears" && pass == "dangoyears" { // 硬编码用户名和密码
-		token := keeper.GenerateToken()
-		keeper.addRoleToken(token, "admin")
-		return token
-	}
-	return ""
-}
-
-// LoginStudent 若传入的用户名和密码正确则返回token，
-// 否则返回空字符串。
-// @未完成
-func (keeper *GateKeeper) LoginStudent(name, pass string) string {
-	return ""
-}
-
-// LoginTeacher 若传入的用户名和密码正确则返回token，
-// 否则返回空字符串。
-// @未完成
-func (keeper *GateKeeper) LoginTeacher(name, pass string) string {
-	return ""
-}
-
-// Logoff 将传入的token从有效token记录中删除，
+// RemoveToken 将传入的token从有效token记录中删除，
 // 被token被删除后不能用于身份认证。
-func (keeper *GateKeeper) Logoff(token string) {
+func (keeper *GateKeeper) RemoveToken(token string) {
 	keeper.removeHumanIDToken(token)
 	keeper.removeRoleToken(token)
 }

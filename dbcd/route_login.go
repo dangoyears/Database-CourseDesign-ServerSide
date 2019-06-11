@@ -7,7 +7,7 @@ import (
 )
 
 type loginEndpointParam struct {
-	Type string `form:"type" binding:"required"`  // {"anonymous", "admin", "student", "teacher"}之一
+	Type string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
 	Name string `form:"name" binding:"required"`
 	Pass string `form:"pass" binding:"required"`
 }
@@ -24,11 +24,11 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 
 			switch param.Type {
 			case "admin":
-				token = engine.keeper.LoginAdmin(name, pass)
+				token = engine.LoginAdmin(name, pass)
 			case "student":
-				token = engine.keeper.LoginStudent(name, pass)
+				token = engine.LoginStudent(name, pass)
 			case "teacher":
-				token = engine.keeper.LoginTeacher(name, pass)
+				token = engine.LoginTeacher(name, pass)
 			}
 			response["token"] = token
 

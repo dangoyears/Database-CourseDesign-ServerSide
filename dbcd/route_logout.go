@@ -19,7 +19,7 @@ func (engine *Engine) GetLogoutEndpoint() gin.HandlerFunc {
 		if c.ShouldBind(&param) == nil {
 			token := param.Token
 
-			engine.keeper.Logoff(token)
+			engine.keeper.RemoveToken(token)
 
 			response.SetCodeAndMsg(0, "token已失效。")
 			c.JSON(http.StatusOK, response)

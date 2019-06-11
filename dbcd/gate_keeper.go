@@ -1,7 +1,7 @@
 package dbcd
 
 import (
-	"log"
+	"sync"
 	"math/rand"
 	"strings"
 	"time"
@@ -10,18 +10,16 @@ import (
 // GateKeeper 保存用户登陆时的凭证。
 type GateKeeper struct {
 	// Token2HumanID 保存token对应的自然人ID。
-	Token2HumanID map[string]string
+	Token2HumanID sync.Map
 
 	// Token2Role 保存token对应的登陆角色。
 	// 登陆角色为{"admin", "student", "teacher"}之一。
-	Token2Role map[string]string
+	Token2Role sync.Map
 }
 
 // NewGateKeeper 返回初始化的GateKeeper。
 func NewGateKeeper() *GateKeeper {
 	var keeper GateKeeper
-	keeper.Token2HumanID = make(map[string]string)
-	keeper.Token2Role = make(map[string]string)
 	return &keeper
 }
 
@@ -44,9 +42,6 @@ func (keeper *GateKeeper) LoginAdmin(name, pass string) string {
 	if name == "dangoyears" && pass == "dangoyears" { // 硬编码用户名和密码
 		token := keeper.GenerateToken()
 		keeper.addRoleToken(token, "admin")
-
-		log.Println(token, keeper.Token2Role[token])
-
 		return token
 	}
 	return ""
@@ -76,8 +71,8 @@ func (keeper *GateKeeper) Logoff(token string) {
 // GetRole 返回token认证的角色。
 // 当token无效时返回"anonymous"。
 func (keeper *GateKeeper) GetRole(token string) string {
-	if role, found := keeper.Token2Role[token]; found {
-		return role
+	if role, found := keeper.Token2Role.Load(token); found {
+		return role.(string)
 	}
 	return "anonymous"
 }
@@ -85,28 +80,28 @@ func (keeper *GateKeeper) GetRole(token string) string {
 // GetHumanID 返回token对应的HumanID。
 // 当token无效时返回空串。
 func (keeper *GateKeeper) GetHumanID(token string) string {
-	if humanID, found := keeper.Token2Role[token]; found {
-		return humanID
+	if humanID, found := keeper.Token2Role.Load(token); found {
+		return humanID.(string)
 	}
 	return ""
 }
 
 // addHumanIDToken 添加可用于验证HumanID的token。
 func (keeper *GateKeeper) addHumanIDToken(token, humanID string) {
-	keeper.Token2HumanID[token] = humanID
+	keeper.Token2HumanID.Store(token, humanID)
 }
 
 // addRoleToken 添加可用于验证角色的token。
 func (keeper *GateKeeper) addRoleToken(token, role string) {
-	keeper.Token2Role[token] = role
+	keeper.Token2Role.Store(token, role)
 }
 
 // removeHumanIDToken 移除传入的HumanID token。
 func (keeper *GateKeeper) removeHumanIDToken(token string) {
-	delete(keeper.Token2HumanID, token)
+	keeper.Token2HumanID.Delete(token)
 }
 
 // removeRoleToken 移除传入的角色token。
 func (keeper *GateKeeper) removeRoleToken(token string) {
-	delete(keeper.Token2Role, token)
+	keeper.Token2Role.Delete(token)
 }

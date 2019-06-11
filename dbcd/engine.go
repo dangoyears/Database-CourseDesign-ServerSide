@@ -68,6 +68,8 @@ func (engine *Engine) establishRouter() {
 	// CORS
 	engine.router.Use(cors.Default())
 
+	engine.BindRoute("/", []string{}, engine.GetWelcomeEndpoint())
+	engine.BindRoute("/welcome", []string{}, engine.GetWelcomeEndpoint())
 	engine.BindRoute("/login", []string{}, engine.GetLoginEndpoint())
 	engine.BindRoute("/logout", []string{}, engine.GetLogoutEndpoint())
 	engine.BindRoute("/role", []string{}, engine.GetRoleEndpoint())

@@ -1,11 +1,8 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/10 22:54:17                           */
+/* Created on:     2019/6/11 19:31:01                           */
 /*==============================================================*/
 
-
-alter table "Administrator"
-   drop constraint FK_ADMINIST_HUMANINHE_HUMAN;
 
 alter table "Class"
    drop constraint FK_CLASS_TEACHERMA_TEACHER;
@@ -130,9 +127,9 @@ create table "AcademicYear"
 /*==============================================================*/
 create table "Administrator" 
 (
-   "HumanID"            INTEGER              not null,
-   "AdministratorNumber" INTEGER,
-   constraint PK_ADMINISTRATOR primary key ("HumanID")
+   "AdminLoginName"     NVARCHAR2(32)        not null,
+   "AdminPassHash"      VARCHAR2(1024),
+   constraint PK_ADMINISTRATOR primary key ("AdminLoginName")
 );
 
 /*==============================================================*/
@@ -158,7 +155,7 @@ create index "TeacherMangeClass_FK" on "Class" (
 create table "ClassRoom" 
 (
    "ClassroomID"        INTEGER              not null,
-   "Location"           VARCHAR2(64)         not null,
+   "Location"           NVARCHAR2(64)        not null,
    "Capacity"           INTEGER,
    constraint PK_CLASSROOM primary key ("ClassroomID"),
    constraint AK_LOCATION_CLASSROO unique ("Location")
@@ -170,7 +167,7 @@ create table "ClassRoom"
 create table "College" 
 (
    "CollegeID"          INTEGER              not null,
-   "CollegeName"        VARCHAR2(32),
+   "CollegeName"        NVARCHAR2(32),
    constraint PK_COLLEGE primary key ("CollegeID")
 );
 
@@ -182,7 +179,7 @@ create table "Course"
    "CourseID"           INTEGER              not null,
    "SmesterID"          INTEGER              not null,
    "LeadTeacherNumber"  INTEGER,
-   "CourseName"         VARCHAR2(32),
+   "CourseName"         NVARCHAR2(32),
    "Credits"            NUMBER(1,1),
    "CourseProperty"     INTEGER             
       constraint CKC_COURSEPROPERTY_COURSE check ("CourseProperty" is null or ("CourseProperty" between 1 and 4)),
@@ -190,10 +187,10 @@ create table "Course"
 );
 
 comment on column "Course"."CourseProperty" is
-'1: רҵ����
-2: רҵѡ��
-3: ͨʶ��ѡ��
-4: ����ѡ��';
+'1: 专业必修
+2: 专业选修
+3: 通识性选修
+4: 体育选修';
 
 /*==============================================================*/
 /* Index: "LeadingTeacherLeadsACourse_FK"                       */
@@ -243,13 +240,12 @@ create index "CoureTakesPlaceInClassroom_FK" on "CourseProgram" (
 create table "Human" 
 (
    "HumanID"            INTEGER              not null,
-   "Name"               VARCHAR2(32)         not null,
-   "Sex"                CHAR(1)              not null
-      constraint CKC_SEX_HUMAN check ("Sex" in ('��','Ů')),
+   "Name"               NVARCHAR2(32)        not null,
+   "Sex"                NCHAR(1)             not null
+      constraint CKC_SEX_HUMAN check ("Sex" in ('男','女')),
    "Birthday"           DATE,
    "Identity"           CHAR(18),
    "Notes"              CLOB,
-   "Username"           VARCHAR2(32),
    "PasswordHash"       VARCHAR2(1024),
    constraint PK_HUMAN primary key ("HumanID")
 );
@@ -266,8 +262,8 @@ create table "Semester"
 );
 
 comment on column "Semester"."SmesterCode" is
-'1: ����ѧ��
-2: �＾ѧ��';
+'1: 春季学期
+2: 秋季学期';
 
 /*==============================================================*/
 /* Index: "AcademicYearHasSemestes_FK"                          */
@@ -282,7 +278,7 @@ create index "AcademicYearHasSemestes_FK" on "Semester" (
 create table "Specialty" 
 (
    "SpecialtyID"        INTEGER              not null,
-   "SpecialtyName"      VARCHAR2(32),
+   "SpecialtyName"      NVARCHAR2(32),
    constraint PK_SPECIALTY primary key ("SpecialtyID")
 );
 
@@ -397,10 +393,6 @@ create index "TeacherTeachCourse_FK" on "TeacherTeachsCourse" (
 create index "TeacherTeachCourse2_FK" on "TeacherTeachsCourse" (
    "CourseID" ASC
 );
-
-alter table "Administrator"
-   add constraint FK_ADMINIST_HUMANINHE_HUMAN foreign key ("HumanID")
-      references "Human" ("HumanID");
 
 alter table "Class"
    add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("HeadTeacherNumber")

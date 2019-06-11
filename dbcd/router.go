@@ -19,7 +19,7 @@ func (engine *Engine) BindRoute(path string, grantedRoles []string, route func(*
 // getPermissionCheckRoute 检查一个API请求是否符合访问权限管理的要求。
 func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.HandlerFunc {
 	type permissionParam struct {
-		Token string `form:"token"`
+		Token string `form:"token" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
@@ -36,14 +36,15 @@ func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.Handler
 				}
 			}
 
-			// 拒绝访问
+			// 拒绝访问。
 			var response = NewRouterResponse()
 			response.SetCodeAndMsg(-1, "权限不足。只允许"+strings.Join(grantedRoles, "、")+"角色访问。传入token的权限不足。")
 			c.JSON(http.StatusOK, response)
 			c.Abort()
+			return
 		}
 
-		// 未传入token参数，拒绝访问
+		// 未传入token参数，拒绝访问。
 		var response = NewRouterResponse()
 		response.SetCodeAndMsg(-1, "权限不足。只允许"+strings.Join(grantedRoles, "、")+"角色访问。请传入token以验证用户身份。")
 		c.JSON(http.StatusOK, response)

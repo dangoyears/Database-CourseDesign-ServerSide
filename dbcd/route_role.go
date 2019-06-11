@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type loginStatusParam struct {
+type roleEndPointParam struct {
 	Token string `form:"token" binding:"required"`
 }
 
@@ -14,7 +14,7 @@ type loginStatusParam struct {
 func (engine *Engine) GetRoleEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
-		var param loginStatusParam
+		var param roleEndPointParam
 
 		if c.ShouldBind(&param) == nil {
 			token := param.Token

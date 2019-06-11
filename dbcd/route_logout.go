@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type logoffParam struct {
+type logoutEndpointParam struct {
 	Token string `form:"token" binding:"required"`
 }
 
@@ -14,7 +14,7 @@ type logoffParam struct {
 func (engine *Engine) GetLogoutEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
-		var param logoffParam
+		var param logoutEndpointParam
 
 		if c.ShouldBind(&param) == nil {
 			token := param.Token

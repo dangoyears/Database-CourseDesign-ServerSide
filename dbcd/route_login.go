@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type loginParam struct {
-	Type string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
+type loginEndpointParam struct {
+	Type string `form:"type" binding:"required"`  // {"anonymous", "admin", "student", "teacher"}之一
 	Name string `form:"name" binding:"required"`
 	Pass string `form:"pass" binding:"required"`
 }
 
-// GetLoginEndpoint 提供“/login”的路由
+// GetLoginEndpoint 提供“/login”的路由。
 func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
-		var param loginParam
+		var param loginEndpointParam
 
 		if c.ShouldBind(&param) == nil {
 			name, pass := param.Name, param.Pass

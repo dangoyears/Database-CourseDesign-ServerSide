@@ -71,6 +71,7 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/login", []string{}, engine.GetLoginEndpoint())
 	engine.BindRoute("/logout", []string{}, engine.GetLogoutEndpoint())
 	engine.BindRoute("/role", []string{}, engine.GetRoleEndpoint())
+	engine.BindRoute("/admin", []string{"admin"}, engine.GetAdminEndpoint())
 }
 
 func (engine *Engine) establishGateKeeper() {

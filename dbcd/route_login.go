@@ -30,7 +30,7 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 			case "teacher":
 				token = engine.keeper.LoginTeacher(name, pass)
 			}
-			response.Data["token"] = token
+			response["token"] = token
 
 			if token != "" {
 				response.SetCodeAndMsg(0, "认证成功。")

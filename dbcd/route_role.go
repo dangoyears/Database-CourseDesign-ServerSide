@@ -21,13 +21,13 @@ func (engine *Engine) GetRoleEndpoint() gin.HandlerFunc {
 
 			role := engine.keeper.GetRole(token)
 
-			response.Data["role"] = role
+			response["role"] = role
 			response.SetCodeAndMsg(0, "已查询。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
-		response.Data["role"] = "anonymous"
+		response["role"] = "anonymous"
 		response.SetCodeAndMsg(-1, "未传入token参数，或传入token为空。")
 		c.JSON(http.StatusOK, response)
 	}

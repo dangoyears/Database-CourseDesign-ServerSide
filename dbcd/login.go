@@ -4,7 +4,7 @@ package dbcd
 // 否则返回空字符串。
 func (engine *Engine) LoginAdmin(name, pass string) string {
 	admin := engine.GetAdministratorByLoginName(name)
-	if admin.LoginName == name && MatchPasswordAndHash(pass, admin.PassHash) { // 硬编码用户名和密码
+	if admin != nil && MatchPasswordAndHash(pass, admin.PassHash) { // 硬编码用户名和密码
 		token := GenerateToken()
 		engine.keeper.addRoleToken(token, "admin")
 		return token

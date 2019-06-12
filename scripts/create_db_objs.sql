@@ -1,8 +1,11 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/11 19:31:01                           */
+/* Created on:     2019/6/12 18:50:01                           */
 /*==============================================================*/
 
+
+alter table "Class"
+   drop constraint FK_CLASS_CLASSBELO_COLLEGE;
 
 alter table "Class"
    drop constraint FK_CLASS_TEACHERMA_TEACHER;
@@ -21,6 +24,9 @@ alter table "CourseProgram"
 
 alter table "Semester"
    drop constraint FK_SEMESTER_ACADEMICY_ACADEMIC;
+
+alter table "Specialty"
+   drop constraint FK_SPECIALT_SPECIALTY_COLLEGE;
 
 alter table "Student"
    drop constraint FK_STUDENT_HUMANINHE_HUMAN;
@@ -59,6 +65,8 @@ drop table "AcademicYear" cascade constraints;
 
 drop table "Administrator" cascade constraints;
 
+drop index "ClassBelongsToCollege_FK";
+
 drop index "TeacherMangeClass_FK";
 
 drop table "Class" cascade constraints;
@@ -84,6 +92,8 @@ drop table "Human" cascade constraints;
 drop index "AcademicYearHasSemestes_FK";
 
 drop table "Semester" cascade constraints;
+
+drop index "SpecialtyBelongsToCollege_FK";
 
 drop table "Specialty" cascade constraints;
 
@@ -138,8 +148,11 @@ create table "Administrator"
 create table "Class" 
 (
    "ClassID"            INTEGER              not null,
+   "Grade"              INTEGER              not null,
+   "Class"              INTEGER              not null,
+   "CollegeID"          INTEGER              not null,
    "HeadTeacherNumber"  INTEGER,
-   constraint PK_CLASS primary key ("ClassID")
+   constraint PK_CLASS primary key ("ClassID", "Grade", "Class")
 );
 
 /*==============================================================*/
@@ -147,6 +160,13 @@ create table "Class"
 /*==============================================================*/
 create index "TeacherMangeClass_FK" on "Class" (
    "HeadTeacherNumber" ASC
+);
+
+/*==============================================================*/
+/* Index: "ClassBelongsToCollege_FK"                            */
+/*==============================================================*/
+create index "ClassBelongsToCollege_FK" on "Class" (
+   "CollegeID" ASC
 );
 
 /*==============================================================*/
@@ -167,8 +187,9 @@ create table "ClassRoom"
 create table "College" 
 (
    "CollegeID"          INTEGER              not null,
-   "CollegeName"        NVARCHAR2(32),
-   constraint PK_COLLEGE primary key ("CollegeID")
+   "CollegeName"        NVARCHAR2(32)        not null,
+   constraint PK_COLLEGE primary key ("CollegeID"),
+   constraint AK_COLLEGENAME_COLLEGE unique ("CollegeName")
 );
 
 /*==============================================================*/
@@ -240,9 +261,9 @@ create index "CoureTakesPlaceInClassroom_FK" on "CourseProgram" (
 create table "Human" 
 (
    "HumanID"            INTEGER              not null,
-   "Name"               NVARCHAR2(32)        not null,
-   "Sex"                NCHAR(1)             not null
-      constraint CKC_SEX_HUMAN check ("Sex" in ('男','女')),
+   "Name"               NVARCHAR2(32),
+   "Sex"                NCHAR(1)            
+      constraint CKC_SEX_HUMAN check ("Sex" is null or ("Sex" in ('男','女'))),
    "Birthday"           DATE,
    "Identity"           CHAR(18),
    "Notes"              CLOB,
@@ -278,8 +299,16 @@ create index "AcademicYearHasSemestes_FK" on "Semester" (
 create table "Specialty" 
 (
    "SpecialtyID"        INTEGER              not null,
+   "CollegeID"          INTEGER              not null,
    "SpecialtyName"      NVARCHAR2(32),
    constraint PK_SPECIALTY primary key ("SpecialtyID")
+);
+
+/*==============================================================*/
+/* Index: "SpecialtyBelongsToCollege_FK"                        */
+/*==============================================================*/
+create index "SpecialtyBelongsToCollege_FK" on "Specialty" (
+   "CollegeID" ASC
 );
 
 /*==============================================================*/
@@ -289,6 +318,8 @@ create table "Student"
 (
    "HumanID"            INTEGER              not null,
    "ClassID"            INTEGER              not null,
+   "Grade"              INTEGER              not null,
+   "Class"              INTEGER              not null,
    "CollegeID"          INTEGER              not null,
    "SpecialtyID"        INTEGER              not null,
    "StudentNumber"      INTEGER              not null,
@@ -315,7 +346,9 @@ create index "StudentHasProfessional_FK" on "Student" (
 /* Index: "StudentBelongsToClass_FK"                            */
 /*==============================================================*/
 create index "StudentBelongsToClass_FK" on "Student" (
-   "ClassID" ASC
+   "ClassID" ASC,
+   "Grade" ASC,
+   "Class" ASC
 );
 
 /*==============================================================*/
@@ -395,6 +428,10 @@ create index "TeacherTeachCourse2_FK" on "TeacherTeachsCourse" (
 );
 
 alter table "Class"
+   add constraint FK_CLASS_CLASSBELO_COLLEGE foreign key ("CollegeID")
+      references "College" ("CollegeID");
+
+alter table "Class"
    add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("HeadTeacherNumber")
       references "Teacher" ("TeacherNumber");
 
@@ -418,13 +455,17 @@ alter table "Semester"
    add constraint FK_SEMESTER_ACADEMICY_ACADEMIC foreign key ("AcademicYear")
       references "AcademicYear" ("AcademicYear");
 
+alter table "Specialty"
+   add constraint FK_SPECIALT_SPECIALTY_COLLEGE foreign key ("CollegeID")
+      references "College" ("CollegeID");
+
 alter table "Student"
    add constraint FK_STUDENT_HUMANINHE_HUMAN foreign key ("HumanID")
       references "Human" ("HumanID");
 
 alter table "Student"
-   add constraint FK_STUDENT_STUDENTBE_CLASS foreign key ("ClassID")
-      references "Class" ("ClassID");
+   add constraint FK_STUDENT_STUDENTBE_CLASS foreign key ("ClassID", "Grade", "Class")
+      references "Class" ("ClassID", "Grade", "Class");
 
 alter table "Student"
    add constraint FK_STUDENT_STUDENTBE_COLLEGE foreign key ("CollegeID")

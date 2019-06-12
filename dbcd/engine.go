@@ -78,6 +78,8 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/read/college", []string{"admin"}, engine.GetReadCollegeEndpoint())
 	engine.BindRoute("/read/student", []string{"admin"}, engine.GetReadStudentEndpoint())
 	engine.BindRoute("/read/teacher", []string{"admin"}, engine.GetReadTeacherEndpoint())
+
+	engine.BindRoute("/write/college", []string{"admin"}, engine.GetReadCollegeEndpoint())
 }
 
 func (engine *Engine) establishGateKeeper() {

@@ -39,13 +39,13 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 				return
 			}
 
-			response.SetCodeAndMsg(1, "认证失败。type、name或pass错误，或者用户不存在。")
+			response.SetCodeAndMsg(1, "认证失败。type、user或pass错误，或者用户不存在。")
 			c.JSON(http.StatusOK, response)
 			return
 		}
 
 		// 参数不足
-		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的type、name和pass参数。")
+		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的type、user和pass参数。")
 		c.JSON(http.StatusOK, response)
 	}
 }

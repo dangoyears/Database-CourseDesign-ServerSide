@@ -2,5 +2,5 @@
 .vscode
 
 # 敏感信息
-config.yaml
+config*.yaml
 !config.example.yaml

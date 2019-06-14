@@ -26,7 +26,7 @@ func (engine *Engine) GetCollegeByName(name string) *College {
 	query := `select "CollegeID", "CollegeName" from "College" 
 where "CollegeName"=:1`
 	row := engine.db.QueryRow(query, name)
-	
+
 	var college College
 	err := row.Scan(&college.CollegeID, &college.CollegeName)
 	if err != nil {
@@ -36,7 +36,6 @@ where "CollegeName"=:1`
 	return &college
 }
 
-
 // RemoveCollegeByName 从数据库中删除College结构。
 func (engine *Engine) RemoveCollegeByName(name string) {
 	query := `delete from "College" where "CollegeName"=:1`
@@ -45,12 +44,11 @@ func (engine *Engine) RemoveCollegeByName(name string) {
 	}
 }
 
-
 // TestCollege 测试College表。
 func (engine *Engine) TestCollege() {
 	log.Println("Test table College.")
 
-	const testCollegeName = "只存在于传说中的学院"
+	const testCollegeName = "如果在看见数据表中看见此学院，后端的数据库测试可能没有成功。"
 
 	engine.CreateAndGetCollege(testCollegeName)
 	engine.RemoveCollegeByName(testCollegeName)

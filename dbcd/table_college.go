@@ -10,8 +10,8 @@ type College struct {
 	CollegeName string
 }
 
-// CreateAndGetCollege 在数据表中创建College结构，并返回新的College结构的指针。
-// 若College存在，则返回既有的结构。
+// CreateAndGetCollege 创建并返回由参数指定的College结构的指针。
+// 若College存在，则返回现有结构的指针。
 func (engine *Engine) CreateAndGetCollege(name string) *College {
 	query := `insert into "College" ("CollegeName") 
 values (:1)`

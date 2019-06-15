@@ -58,6 +58,7 @@ func (engine *Engine) testDB() {
 	log.Println("Database tests began.")
 	engine.TestAcademicYear()
 	engine.TestCollege()
+	engine.TestClass()
 	log.Println("All database tests finished.")
 }
 

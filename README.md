@@ -1,5 +1,7 @@
 # Database Course Design服务器端代码
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/dangoyears/Database-CourseDesign-ServerSide)](https://goreportcard.com/report/github.com/dangoyears/Database-CourseDesign-ServerSide)
+
 **此文档已过时！** 此文档尚不能及时更新。
 
 ## 先决条件

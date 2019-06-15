@@ -58,9 +58,10 @@ func (engine *Engine) testDB() {
 	log.Println("Database tests began.")
 	engine.TestTableAcademicYear()
 	engine.TestTableAdministrator()
-	engine.TestCollege()
+	engine.TestTableCollege()
 	engine.TestClass()
-	log.Println("All database tests finished.")
+	engine.TestTableSpecialty()
+	log.Println("All database tests have finished.")
 }
 
 // ensureThatAtLeastOneAdministratorExists 确保至少有一个管理员账户存在。

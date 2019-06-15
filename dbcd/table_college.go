@@ -44,11 +44,11 @@ func (engine *Engine) RemoveCollegeByName(name string) {
 	}
 }
 
-// TestCollege 测试College表。
-func (engine *Engine) TestCollege() {
-	log.Println("Test table College.")
+// TestTableCollege 测试College表。
+func (engine *Engine) TestTableCollege() {
+	log.Println("Testing table College.")
 
-	const testCollegeName = "如果在看见数据表中看见此学院，后端的数据库测试可能没有成功。"
+	const testCollegeName = "若此学院可见，数据表测试可能没有成功。"
 
 	engine.CreateAndGetCollege(testCollegeName)
 	engine.RemoveCollegeByName(testCollegeName)

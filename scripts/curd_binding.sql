@@ -22,7 +22,10 @@ select count(*) from "Administrator" where "AdminLoginName"=:1;
 -- create
 insert into "College" ("CollegeName") values (:1);
 -- read
+select count(*) from "College" where "CollegeName"=:1;
 select "CollegeID", "CollegeName" from "College";
+select "CollegeID", "CollegeName" from "College" where "CollegeID"=:1;
+select "CollegeID", "CollegeName" from "College" where "CollegeName"=:1;
 -- update
 update "College" set "CollegeName"=:2 where "CollegeName"=:1;
 -- delete
@@ -31,14 +34,13 @@ delete from "College" where "CollegeName"=:1;
 
 /* Specialty */
 -- create
-insert into "Sepcialty" ("CollegeID", "SepcialtyName") values (:1, :2);
+insert into "Specialty" ("CollegeID", "SpecialtyName") values (:1, :2);
 -- read
 select count(*) from "Specialty";
 select count(*) from "Specialty" where "SepcialtyName"=:1;
-select ("SepcialtyID", "CollegeID", "SepcailtyName") from "Sepcailty"
-where "SepcailtyName"=:1;
+select ("SpecialtyID", "CollegeID", "SpecailtyName") from "Specialty" where "SpecailtyName"=:1;
 -- delete
-delete from "Specialty" where "SepcailtyName"=:1;
+delete from "Specialty" where "SpecailtyName"=:1;
 
 
 /* Class */

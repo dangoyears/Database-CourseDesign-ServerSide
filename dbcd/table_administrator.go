@@ -18,8 +18,8 @@ func (engine *Engine) GetAdministratorsCount() int {
 	return count
 }
 
-// AdministratorWithNameExists 返回具有name登陆名的管理员账户是否存在
-func (engine *Engine) AdministratorWithNameExists(name string) bool {
+// AdministratorExists 返回具有name登陆名的管理员账户是否存在
+func (engine *Engine) AdministratorExists(name string) bool {
 	query := `select count(*) from "Administrator where "AdminLoginName"=:1`
 	result := engine.db.QueryRow(query, name)
 

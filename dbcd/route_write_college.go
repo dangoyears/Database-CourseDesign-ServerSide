@@ -11,10 +11,10 @@ import (
 func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 
 	type writeCollegeEndpointParam struct {
-		CollegeName   string `form:"college" binding:"required"`
-		SpecialtyName string `form:"specialty" binding:"required"`
-		Grade         string `form:"grade" binding:"required"`
-		ClassCode     string `form:"class" binding:"required"`
+		CollegeName   string `json:"college" form:"college" binding:"required"`
+		SpecialtyName string `json:"specialty" form:"specialty" binding:"required"`
+		Grade         string `json:"grade" form:"grade" binding:"required"`
+		ClassCode     string `json:"class" form:"class" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
@@ -28,7 +28,7 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 			if err != nil {
 				engine.Trace(err)
 			}
-			
+
 			classCode, err := strconv.Atoi(param.ClassCode)
 			if err != nil {
 				engine.Trace(err)
@@ -39,7 +39,7 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 			c.JSON(http.StatusOK, response)
 			return
 		}
-		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的college、specailty、grade和class参数。")
+		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的college、specialty、grade和class参数。")
 		c.JSON(http.StatusOK, response)
 	}
 }

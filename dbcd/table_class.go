@@ -6,7 +6,7 @@ import "log"
 type Class struct {
 	ClassID              int
 	SpecialtyID          int
-	MasterTeacherHumanID int
+	MasterTeacherHumanID *int
 	Grade                int
 	ClassCode            int
 }

@@ -16,8 +16,8 @@ type Human struct {
 	PasswordHash string
 }
 
-// CreateHumanAndReturnID 在数据表中创建Human数据项，并返回创建Human数据项的HumanID。
-func (engine *Engine) CreateHumanAndReturnID(human Human) int {
+// CreateHuman 在数据表中创建Human数据项，并返回创建Human数据项的HumanID。
+func (engine *Engine) CreateHuman(human Human) int {
 	query := `insert into "Human" ("Name", "Sex", "Birthday", "Identity", "Notes", "PasswordHash")
 values (:1, :2, :3, :4, :5, :6)`
 
@@ -145,7 +145,7 @@ func (engine *Engine) TestTableHuman() {
 	}
 	testHuman.Identity = testIdentity
 
-	testHumanID := engine.CreateHumanAndReturnID(testHuman)
+	testHumanID := engine.CreateHuman(testHuman)
 	if testHumanID == 0 {
 		log.Panicln("Table Human test failed: ID should NOT be empty.")
 	}

@@ -60,6 +60,7 @@ func (engine *Engine) testDB() {
 	engine.TestTableAdministrator()
 	engine.TestTableClass()
 	engine.TestTableCollege()
+	engine.TestTableHuman()
 	engine.TestTableSpecialty()
 	log.Println("All database tests have finished.")
 }

@@ -39,3 +39,9 @@ $ netstat -ap | grep 12323
 tcp        0      0 127.0.0.1:12323         0.0.0.0:*               LISTEN      4639/dbcd
 $ kill 4639
 ```
+
+## 开发细节
+
+### 关于Oracle SQL的占位符
+
+对于形如`update "Human" set "Name"=:2 where "HumanID"=:1`等带绑定的SQL语句，goracle.v2`3222d7159b45fce95150f06a57e1bcc2868108d3`不会按照SQL语句中占位符的数字所暗示的参数顺序进行绑定，而是按照占位符出现的顺序进行绑定。

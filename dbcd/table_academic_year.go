@@ -1,29 +1,57 @@
 package dbcd
 
 import (
-	"database/sql"
 	"log"
 )
 
-// AcademicYear 是表“AcademicYear”的模型
+// AcademicYear 表“AcademicYear”的模型
 type AcademicYear struct {
 	AcademicYear int
 }
 
-// TestInsertIntoAcademicYear 测试能否向表中插入数据
-func TestInsertIntoAcademicYear(db *sql.DB) {
-	var (
-		err      error
-		testYear = 3030
-	)
+// AcademicYearExists 返回year指定的学年是否存在。
+func (engine *Engine) AcademicYearExists(year int) bool {
+	query := `select count(*) from "AcademicYear" where "AcademicYear"=:1`
+	result := engine.db.QueryRow(query, year)
 
-	_, err = db.Exec(`INSERT INTO "AcademicYear" ("AcademicYear") VALUES (:1)`, testYear)
+	var count int
+	err := result.Scan(&count)
 	if err != nil {
-		log.Println(err)
-		return
+		log.Println(year, err)
 	}
-	_, err = db.Exec(`DELETE FROM "AcademicYear" WHERE "AcademicYear"=:1`, testYear)
+	return count >= 1
+}
+
+// CreateAcademicYear 创建年份为year的学年。
+func (engine *Engine) CreateAcademicYear(year int) {
+	query := `insert into "AcademicYear" values (:1)`
+	_, err := engine.db.Exec(query, year)
 	if err != nil {
-		log.Println(err)
+		log.Println(year, err)
+	}
+}
+
+// DeleteAcademicYear 删除年份为year的学年。
+func (engine *Engine) DeleteAcademicYear(year int) {
+	query := `delete from "AcademicYear" where "AcademicYear"=:1`
+	_, err := engine.db.Exec(query, year)
+	if err != nil {
+		log.Println(year, err)
+	}
+}
+
+// TestTableAcademicYear 测试能否向表中插入数据
+func (engine *Engine) TestTableAcademicYear() {
+	const testYear = 3030
+
+	log.Println("Testing table AcademicYear.")
+	engine.DeleteAcademicYear(testYear)
+	engine.CreateAcademicYear(testYear)
+	if !engine.AcademicYearExists(testYear) {
+		log.Panicln("Table AcademicYear test failed! Test year should exist.")
+	}
+	engine.DeleteAcademicYear(testYear)
+	if engine.AcademicYearExists(testYear) {
+		log.Panicln("Table AcademicYear test failed! Test year should NOT exist.")
 	}
 }

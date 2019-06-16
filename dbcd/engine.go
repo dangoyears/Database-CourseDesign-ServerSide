@@ -29,7 +29,7 @@ func NewEngine(config EngineConfiguration) *Engine {
 	var engine Engine
 	engine.setupConfiguration(config)
 	engine.establishDB()
-	engine.testDB()
+	engine.ensureThatAtLeastOneAdministratorExists()
 	engine.establishRouter()
 	engine.establishGateKeeper()
 	return &engine
@@ -50,13 +50,30 @@ func (engine *Engine) establishDB() {
 	if err = engine.db.Ping(); err != nil {
 		log.Fatalln(err)
 	}
+	engine.testDB()
 }
 
 // testDB 测试数据库功能，包括测试数据库能否正常写入等。
 func (engine *Engine) testDB() {
 	log.Println("Database tests began.")
-	TestInsertIntoAcademicYear(engine.db)
-	log.Println("All database tests finished.")
+	engine.TestTableAcademicYear()
+	engine.TestTableAdministrator()
+	engine.TestTableClass()
+	engine.TestTableCollege()
+	engine.TestTableHuman()
+	engine.TestTableSpecialty()
+	engine.TestTableStudent()
+	engine.TestTableTeacher()
+	log.Println("All database tests have finished.")
+}
+
+// ensureThatAtLeastOneAdministratorExists 确保至少有一个管理员账户存在。
+// 如果不存在任意的管理员账户，则创建默认账户。
+func (engine *Engine) ensureThatAtLeastOneAdministratorExists() {
+	if engine.GetAdministratorsCount() == 0 {
+		log.Println("Create default administrator account since there is no admin exists.")
+		engine.CreateDefaultAdministrator()
+	}
 }
 
 // establishRouter 建立路由。
@@ -79,7 +96,9 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/read/student", []string{"admin"}, engine.GetReadStudentEndpoint())
 	engine.BindRoute("/read/teacher", []string{"admin"}, engine.GetReadTeacherEndpoint())
 
-	engine.BindRoute("/write/college", []string{"admin"}, engine.GetReadCollegeEndpoint())
+	engine.BindRoute("/write/college", []string{"admin"}, engine.GetWriteCollegeEndpoint())
+	engine.BindRoute("/write/teacher", []string{"admin"}, engine.GetWriteTeacherEndpoint())
+	engine.BindRoute("/write/student", []string{"admin"}, engine.GetWriteStudentEndpoint())
 }
 
 func (engine *Engine) establishGateKeeper() {

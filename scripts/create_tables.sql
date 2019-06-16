@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/13 14:35:14                           */
+/* Created on:     2019/6/16 10:05:02                           */
 /*==============================================================*/
 
 
@@ -10,7 +10,6 @@ create or replace package PDTypes
 as
     TYPE ref_cursor IS REF CURSOR;
 end;
-/
 
 -- Integrity package declaration
 create or replace package IntegrityPackage AS
@@ -156,32 +155,8 @@ drop trigger "CompoundUpdateTrigger_specialt"
 drop trigger "tib_specialty"
 /
 
-drop trigger "CompoundDeleteTrigger_student"
-/
-
-drop trigger "CompoundInsertTrigger_student"
-/
-
-drop trigger "CompoundUpdateTrigger_student"
-/
-
-drop trigger "tib_student"
-/
-
-drop trigger "CompoundDeleteTrigger_teacher"
-/
-
-drop trigger "CompoundInsertTrigger_teacher"
-/
-
-drop trigger "CompoundUpdateTrigger_teacher"
-/
-
-drop trigger "tib_teacher"
-/
-
 alter table "Class"
-   drop constraint FK_CLASS_CLASSBELO_COLLEGE
+   drop constraint FK_CLASS_CLASSBELO_SPECIALT
 /
 
 alter table "Class"
@@ -220,19 +195,11 @@ alter table "Student"
    drop constraint FK_STUDENT_STUDENTBE_CLASS
 /
 
-alter table "Student"
-   drop constraint FK_STUDENT_STUDENTBE_COLLEGE
-/
-
-alter table "Student"
-   drop constraint FK_STUDENT_STUDENTHA_SPECIALT
-/
-
-alter table "StudentAttendCourse"
+alter table "StudentAttendsCourse"
    drop constraint FK_STUDENTA_STUDENTAT_COURSE
 /
 
-alter table "StudentAttendCourse"
+alter table "StudentAttendsCourse"
    drop constraint FK_STUDENTA_STUDENTAT_STUDENT
 /
 
@@ -242,10 +209,6 @@ alter table "Teacher"
 
 alter table "Teacher"
    drop constraint FK_TEACHER_TEACHERBE_COLLEGE
-/
-
-alter table "Teacher"
-   drop constraint FK_TEACHER_TEACHERHA_SPECIALT
 /
 
 alter table "TeacherTeachsCourse"
@@ -262,7 +225,7 @@ drop table "AcademicYear" cascade constraints
 drop table "Administrator" cascade constraints
 /
 
-drop index "ClassBelongsToCollege_FK"
+drop index "ClassBelongsToSpecialty_FK"
 /
 
 drop index "TeacherMangeClass_FK"
@@ -271,7 +234,7 @@ drop index "TeacherMangeClass_FK"
 drop table "Class" cascade constraints
 /
 
-drop table "ClassRoom" cascade constraints
+drop table "Classroom" cascade constraints
 /
 
 drop table "College" cascade constraints
@@ -295,6 +258,9 @@ drop index "CourseHasCourseProgram_FK"
 drop table "CourseProgram" cascade constraints
 /
 
+drop index "Identity_UK"
+/
+
 drop table "Human" cascade constraints
 /
 
@@ -313,12 +279,6 @@ drop table "Specialty" cascade constraints
 drop index "StudentBelongsToClass_FK"
 /
 
-drop index "StudentHasSpecialty_FK"
-/
-
-drop index "StudentBelongsToCollege_FK"
-/
-
 drop table "Student" cascade constraints
 /
 
@@ -328,10 +288,7 @@ drop index "StudentAttendCourse2_FK"
 drop index "StudentAttendCourse_FK"
 /
 
-drop table "StudentAttendCourse" cascade constraints
-/
-
-drop index "TeacherHasSpecialty_FK"
+drop table "StudentAttendsCourse" cascade constraints
 /
 
 drop index "TeacherBelongsToCollege_FK"
@@ -354,9 +311,9 @@ drop sequence "IDSequence"
 
 create sequence "IDSequence"
 increment by 1
-start with 0
+start with 1
  nomaxvalue
- nominvalue
+nocycle
 /
 
 /*==============================================================*/
@@ -386,10 +343,10 @@ create table "Administrator"
 create table "Class" 
 (
    "ClassID"            INTEGER              not null,
-   "CollegeID"          INTEGER              not null,
-   "MasterTeacherNumber" INTEGER,
+   "SpecialtyID"        INTEGER              not null,
+   "MasterTeacherHumanID" INTEGER,
    "Grade"              INTEGER              not null,
-   "Class"              INTEGER              not null,
+   "ClassCode"          INTEGER              not null,
    constraint PK_CLASS primary key ("ClassID")
 )
 /
@@ -398,22 +355,22 @@ create table "Class"
 /* Index: "TeacherMangeClass_FK"                                */
 /*==============================================================*/
 create index "TeacherMangeClass_FK" on "Class" (
-   "MasterTeacherNumber" ASC
+   "MasterTeacherHumanID" ASC
 )
 /
 
 /*==============================================================*/
-/* Index: "ClassBelongsToCollege_FK"                            */
+/* Index: "ClassBelongsToSpecialty_FK"                          */
 /*==============================================================*/
-create index "ClassBelongsToCollege_FK" on "Class" (
-   "CollegeID" ASC
+create index "ClassBelongsToSpecialty_FK" on "Class" (
+   "SpecialtyID" ASC
 )
 /
 
 /*==============================================================*/
-/* Table: "ClassRoom"                                           */
+/* Table: "Classroom"                                           */
 /*==============================================================*/
-create table "ClassRoom" 
+create table "Classroom" 
 (
    "ClassroomID"        INTEGER              not null,
    "Location"           NVARCHAR2(64)        not null,
@@ -442,7 +399,7 @@ create table "Course"
 (
    "CourseID"           INTEGER              not null,
    "SmesterID"          INTEGER              not null,
-   "LeadTeacherNumber"  INTEGER,
+   "LeadTeacherHumanID" INTEGER,
    "CourseName"         NVARCHAR2(32),
    "Credits"            NUMBER(1,1),
    "CourseProperty"     INTEGER             
@@ -462,7 +419,7 @@ comment on column "Course"."CourseProperty" is
 /* Index: "LeadingTeacherLeadsACourse_FK"                       */
 /*==============================================================*/
 create index "LeadingTeacherLeadsACourse_FK" on "Course" (
-   "LeadTeacherNumber" ASC
+   "LeadTeacherHumanID" ASC
 )
 /
 
@@ -515,10 +472,19 @@ create table "Human"
    "Sex"                NCHAR(1)            
       constraint CKC_SEX_HUMAN check ("Sex" is null or ("Sex" in ('男','女'))),
    "Birthday"           DATE,
-   "Identity"           CHAR(18),
+   "Identity"           CHAR(18)             not null,
    "Notes"              CLOB,
    "PasswordHash"       VARCHAR2(1024),
-   constraint PK_HUMAN primary key ("HumanID")
+   constraint PK_HUMAN primary key ("HumanID"),
+   constraint AK_IDENTITY_HUMAN unique ("Identity")
+)
+/
+
+/*==============================================================*/
+/* Index: "Identity_UK"                                         */
+/*==============================================================*/
+create unique index "Identity_UK" on "Human" (
+   "Identity" ASC
 )
 /
 
@@ -574,29 +540,21 @@ create table "Student"
 (
    "HumanID"            INTEGER              not null,
    "ClassID"            INTEGER              not null,
-   "CollegeID"          INTEGER              not null,
-   "SpecialtyID"        INTEGER              not null,
    "StudentNumber"      INTEGER              not null,
-   "Enrollment"         DATE,
-   constraint PK_STUDENT primary key ("StudentNumber"),
-   constraint AK_HUMANID_STUDENT unique ("HumanID")
+   "AdmissionDate"      DATE,
+   "GraduationDate"     DATE,
+   "StudentDegree"      NVARCHAR2(8)        
+      constraint CKC_STUDENTDEGREE_STUDENT check ("StudentDegree" is null or ("StudentDegree" in ('学士','硕士','博士'))),
+   "YearOfSchool"       INTEGER              default 4,
+   "Status"             NVARCHAR2(8)        
+      constraint CKC_STATUS_STUDENT check ("Status" is null or ("Status" in ('在读','毕业'))),
+   constraint PK_STUDENT primary key ("HumanID"),
+   constraint AK_STUDENTNUMBER_STUDENT unique ("StudentNumber")
 )
 /
 
-/*==============================================================*/
-/* Index: "StudentBelongsToCollege_FK"                          */
-/*==============================================================*/
-create index "StudentBelongsToCollege_FK" on "Student" (
-   "CollegeID" ASC
-)
-/
-
-/*==============================================================*/
-/* Index: "StudentHasSpecialty_FK"                              */
-/*==============================================================*/
-create index "StudentHasSpecialty_FK" on "Student" (
-   "SpecialtyID" ASC
-)
+comment on column "Student"."GraduationDate" is
+'根据学制可设置成毕业年的9月份。'
 /
 
 /*==============================================================*/
@@ -608,21 +566,21 @@ create index "StudentBelongsToClass_FK" on "Student" (
 /
 
 /*==============================================================*/
-/* Table: "StudentAttendCourse"                                 */
+/* Table: "StudentAttendsCourse"                                */
 /*==============================================================*/
-create table "StudentAttendCourse" 
+create table "StudentAttendsCourse" 
 (
    "CourseID"           INTEGER              not null,
-   "StudentNumber"      INTEGER              not null,
+   "StudentHumanID"     INTEGER              not null,
    "Score"              INTEGER,
-   constraint PK_STUDENTATTENDCOURSE primary key ("StudentNumber", "CourseID")
+   constraint PK_STUDENTATTENDSCOURSE primary key ("CourseID", "StudentHumanID")
 )
 /
 
 /*==============================================================*/
 /* Index: "StudentAttendCourse_FK"                              */
 /*==============================================================*/
-create index "StudentAttendCourse_FK" on "StudentAttendCourse" (
+create index "StudentAttendCourse_FK" on "StudentAttendsCourse" (
    "CourseID" ASC
 )
 /
@@ -630,8 +588,8 @@ create index "StudentAttendCourse_FK" on "StudentAttendCourse" (
 /*==============================================================*/
 /* Index: "StudentAttendCourse2_FK"                             */
 /*==============================================================*/
-create index "StudentAttendCourse2_FK" on "StudentAttendCourse" (
-   "StudentNumber" ASC
+create index "StudentAttendCourse2_FK" on "StudentAttendsCourse" (
+   "StudentHumanID" ASC
 )
 /
 
@@ -641,11 +599,15 @@ create index "StudentAttendCourse2_FK" on "StudentAttendCourse" (
 create table "Teacher" 
 (
    "HumanID"            INTEGER              not null,
-   "SpecialtyID"        INTEGER,
    "CollegeID"          INTEGER              not null,
    "TeacherNumber"      INTEGER              not null,
-   constraint PK_TEACHER primary key ("TeacherNumber"),
-   constraint AK_HUMANID_TEACHER unique ("HumanID")
+   "GraduationSchool"   NVARCHAR2(32),
+   "Position"           NVARCHAR2(8)        
+      constraint CKC_POSITION_TEACHER check ("Position" is null or ("Position" in ('教务办主任','普通教师'))),
+   "TeacherDegree"      NVARCHAR2(8)        
+      constraint CKC_TEACHERDEGREE_TEACHER check ("TeacherDegree" is null or ("TeacherDegree" in ('学士','硕士','博士','博士后'))),
+   constraint PK_TEACHER primary key ("HumanID"),
+   constraint AK_TEACHERNUMBER_TEACHER unique ("TeacherNumber")
 )
 /
 
@@ -658,21 +620,13 @@ create index "TeacherBelongsToCollege_FK" on "Teacher" (
 /
 
 /*==============================================================*/
-/* Index: "TeacherHasSpecialty_FK"                              */
-/*==============================================================*/
-create index "TeacherHasSpecialty_FK" on "Teacher" (
-   "SpecialtyID" ASC
-)
-/
-
-/*==============================================================*/
 /* Table: "TeacherTeachsCourse"                                 */
 /*==============================================================*/
 create table "TeacherTeachsCourse" 
 (
+   "TeacherHumanID"     INTEGER              not null,
    "CourseID"           INTEGER              not null,
-   "TeacherNumber"      INTEGER              not null,
-   constraint PK_TEACHERTEACHSCOURSE primary key ("TeacherNumber", "CourseID")
+   constraint PK_TEACHERTEACHSCOURSE primary key ("TeacherHumanID", "CourseID")
 )
 /
 
@@ -680,7 +634,7 @@ create table "TeacherTeachsCourse"
 /* Index: "TeacherTeachsCourse_FK"                              */
 /*==============================================================*/
 create index "TeacherTeachsCourse_FK" on "TeacherTeachsCourse" (
-   "TeacherNumber" ASC
+   "TeacherHumanID" ASC
 )
 /
 
@@ -693,13 +647,13 @@ create index "TeacherTeachsCourse2_FK" on "TeacherTeachsCourse" (
 /
 
 alter table "Class"
-   add constraint FK_CLASS_CLASSBELO_COLLEGE foreign key ("CollegeID")
-      references "College" ("CollegeID")
+   add constraint FK_CLASS_CLASSBELO_SPECIALT foreign key ("SpecialtyID")
+      references "Specialty" ("SpecialtyID")
 /
 
 alter table "Class"
-   add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("MasterTeacherNumber")
-      references "Teacher" ("TeacherNumber")
+   add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("MasterTeacherHumanID")
+      references "Teacher" ("HumanID")
 /
 
 alter table "Course"
@@ -708,8 +662,8 @@ alter table "Course"
 /
 
 alter table "Course"
-   add constraint FK_COURSE_LEADINGTE_TEACHER foreign key ("LeadTeacherNumber")
-      references "Teacher" ("TeacherNumber")
+   add constraint FK_COURSE_LEADINGTE_TEACHER foreign key ("LeadTeacherHumanID")
+      references "Teacher" ("HumanID")
 /
 
 alter table "CourseProgram"
@@ -719,7 +673,7 @@ alter table "CourseProgram"
 
 alter table "CourseProgram"
    add constraint FK_COURSEPR_COURSETAK_CLASSROO foreign key ("ClassroomID")
-      references "ClassRoom" ("ClassroomID")
+      references "Classroom" ("ClassroomID")
 /
 
 alter table "Semester"
@@ -742,24 +696,14 @@ alter table "Student"
       references "Class" ("ClassID")
 /
 
-alter table "Student"
-   add constraint FK_STUDENT_STUDENTBE_COLLEGE foreign key ("CollegeID")
-      references "College" ("CollegeID")
-/
-
-alter table "Student"
-   add constraint FK_STUDENT_STUDENTHA_SPECIALT foreign key ("SpecialtyID")
-      references "Specialty" ("SpecialtyID")
-/
-
-alter table "StudentAttendCourse"
+alter table "StudentAttendsCourse"
    add constraint FK_STUDENTA_STUDENTAT_COURSE foreign key ("CourseID")
       references "Course" ("CourseID")
 /
 
-alter table "StudentAttendCourse"
-   add constraint FK_STUDENTA_STUDENTAT_STUDENT foreign key ("StudentNumber")
-      references "Student" ("StudentNumber")
+alter table "StudentAttendsCourse"
+   add constraint FK_STUDENTA_STUDENTAT_STUDENT foreign key ("StudentHumanID")
+      references "Student" ("HumanID")
 /
 
 alter table "Teacher"
@@ -772,14 +716,9 @@ alter table "Teacher"
       references "College" ("CollegeID")
 /
 
-alter table "Teacher"
-   add constraint FK_TEACHER_TEACHERHA_SPECIALT foreign key ("SpecialtyID")
-      references "Specialty" ("SpecialtyID")
-/
-
 alter table "TeacherTeachsCourse"
-   add constraint FK_TEACHERT_TEACHERTE_TEACHER foreign key ("TeacherNumber")
-      references "Teacher" ("TeacherNumber")
+   add constraint FK_TEACHERT_TEACHERTE_TEACHER foreign key ("TeacherHumanID")
+      references "Teacher" ("HumanID")
 /
 
 alter table "TeacherTeachsCourse"
@@ -790,8 +729,8 @@ alter table "TeacherTeachsCourse"
 
 create or replace trigger "CompoundDeleteTrigger_class"
 for delete on "Class" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -818,8 +757,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_class"
 for insert on "Class" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -846,8 +785,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_class"
 for update on "Class" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -883,7 +822,7 @@ declare
 
 begin
     --  Column ""ClassID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."ClassID" from dual;
+    select IDSequence.NEXTVAL INTO :new."ClassID" from dual;
 
 --  Errors handling
 exception
@@ -894,9 +833,9 @@ end;
 
 
 create or replace trigger "CompoundDeleteTrigger_classroo"
-for delete on "ClassRoom" compound trigger
--- Declaration
--- Body
+for delete on "Classroom" compound trigger
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -922,9 +861,9 @@ END
 
 
 create or replace trigger "CompoundInsertTrigger_classroo"
-for insert on "ClassRoom" compound trigger
--- Declaration
--- Body
+for insert on "Classroom" compound trigger
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -950,9 +889,9 @@ END
 
 
 create or replace trigger "CompoundUpdateTrigger_classroo"
-for update on "ClassRoom" compound trigger
--- Declaration
--- Body
+for update on "Classroom" compound trigger
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -978,7 +917,7 @@ END
 
 
 create trigger "tib_classroom" before insert
-on "ClassRoom" for each row
+on "Classroom" for each row
 declare
     integrity_error  exception;
     errno            integer;
@@ -988,7 +927,7 @@ declare
 
 begin
     --  Column ""ClassroomID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."ClassroomID" from dual;
+    select IDSequence.NEXTVAL INTO :new."ClassroomID" from dual;
 
 --  Errors handling
 exception
@@ -1000,8 +939,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_college"
 for delete on "College" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1028,8 +967,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_college"
 for insert on "College" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1056,8 +995,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_college"
 for update on "College" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1093,7 +1032,7 @@ declare
 
 begin
     --  Column ""CollegeID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."CollegeID" from dual;
+    select IDSequence.NEXTVAL INTO :new."CollegeID" from dual;
 
 --  Errors handling
 exception
@@ -1105,8 +1044,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_course"
 for delete on "Course" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1133,8 +1072,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_course"
 for insert on "Course" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1161,8 +1100,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_course"
 for update on "Course" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1198,7 +1137,7 @@ declare
 
 begin
     --  Column ""CourseID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."CourseID" from dual;
+    select IDSequence.NEXTVAL INTO :new."CourseID" from dual;
 
 --  Errors handling
 exception
@@ -1210,8 +1149,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_coursepr"
 for delete on "CourseProgram" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1238,8 +1177,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_coursepr"
 for insert on "CourseProgram" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1266,8 +1205,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_coursepr"
 for update on "CourseProgram" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1303,7 +1242,7 @@ declare
 
 begin
     --  Column ""CourseProgramID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."CourseProgramID" from dual;
+    select IDSequence.NEXTVAL INTO :new."CourseProgramID" from dual;
 
 --  Errors handling
 exception
@@ -1315,8 +1254,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_human"
 for delete on "Human" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1343,8 +1282,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_human"
 for insert on "Human" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1371,8 +1310,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_human"
 for update on "Human" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1408,7 +1347,7 @@ declare
 
 begin
     --  Column ""HumanID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."HumanID" from dual;
+    select IDSequence.NEXTVAL INTO :new."HumanID" from dual;
 
 --  Errors handling
 exception
@@ -1420,8 +1359,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_semester"
 for delete on "Semester" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1448,8 +1387,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_semester"
 for insert on "Semester" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1476,8 +1415,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_semester"
 for update on "Semester" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1513,7 +1452,7 @@ declare
 
 begin
     --  Column ""SmesterID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."SmesterID" from dual;
+    select IDSequence.NEXTVAL INTO :new."SmesterID" from dual;
 
 --  Errors handling
 exception
@@ -1525,8 +1464,8 @@ end;
 
 create or replace trigger "CompoundDeleteTrigger_specialt"
 for delete on "Specialty" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1553,8 +1492,8 @@ END
 
 create or replace trigger "CompoundInsertTrigger_specialt"
 for insert on "Specialty" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1581,8 +1520,8 @@ END
 
 create or replace trigger "CompoundUpdateTrigger_specialt"
 for update on "Specialty" compound trigger
--- Declaration
--- Body
+// Declaration
+// Body
   before statement is
   begin
      NULL;
@@ -1618,7 +1557,7 @@ declare
 
 begin
     --  Column ""SpecialtyID"" uses sequence IDSequence
-    select "IDSequence".NEXTVAL INTO :new."SpecialtyID" from dual;
+    select IDSequence.NEXTVAL INTO :new."SpecialtyID" from dual;
 
 --  Errors handling
 exception
@@ -1627,169 +1566,3 @@ exception
 end;
 /
 
-
-create or replace trigger "CompoundDeleteTrigger_student"
-for delete on "Student" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/
-
-
-create or replace trigger "CompoundInsertTrigger_student"
-for insert on "Student" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/
-
-
-create or replace trigger "CompoundUpdateTrigger_student"
-for update on "Student" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/
-
-create or replace trigger "CompoundDeleteTrigger_teacher"
-for delete on "Teacher" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/
-
-
-create or replace trigger "CompoundInsertTrigger_teacher"
-for insert on "Teacher" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/
-
-
-create or replace trigger "CompoundUpdateTrigger_teacher"
-for update on "Teacher" compound trigger
--- Declaration
--- Body
-  before statement is
-  begin
-     NULL;
-  end before statement;
-
-  before each row is
-  begin
-     NULL;
-  end before each row;
-
-  after each row is
-  begin
-     NULL;
-  end after each row;
-
-  after statement is
-  begin
-     NULL;
-  end after statement;
-
-END
-/

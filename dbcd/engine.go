@@ -78,6 +78,7 @@ func (engine *Engine) ensureThatAtLeastOneAdministratorExists() {
 
 // establishRouter 建立路由。
 func (engine *Engine) establishRouter() {
+	gin.SetMode(gin.ReleaseMode)
 	engine.router = gin.New()
 	engine.router.Use(gin.Logger())
 	engine.router.Use(gin.Recovery())

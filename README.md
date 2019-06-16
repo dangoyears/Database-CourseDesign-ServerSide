@@ -1,5 +1,6 @@
 # Database Course Design服务器端代码
 
+[![Build Status](https://travis-ci.org/dangoyears/Database-CourseDesign-ServerSide.svg?branch=master)](https://travis-ci.org/dangoyears/Database-CourseDesign-ServerSide)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dangoyears/Database-CourseDesign-ServerSide)](https://goreportcard.com/report/github.com/dangoyears/Database-CourseDesign-ServerSide)
 
 **此文档已过时！** 此文档尚不能及时更新。

@@ -85,7 +85,6 @@ func (engine *Engine) GetHumanByIdentity(identity string) *Human {
 	result := engine.db.QueryRow(query, identity)
 	var human Human
 	if err := result.Scan(&human.HumanID, &human.Name, &human.Sex, &human.Birthday, &human.Identity, &human.Notes, &human.PasswordHash); err != nil {
-		log.Println(query, identity, err)
 		return nil
 	}
 	return &human

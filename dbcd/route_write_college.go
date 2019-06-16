@@ -21,7 +21,7 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 		var param writeCollegeEndpointParam
 		var response = NewRouterResponse()
 
-		if c.ShouldBind(&param) == nil {
+		if err := c.ShouldBind(&param); err == nil {
 			collegeName, specailtyName := param.CollegeName, param.SpecialtyName
 
 			grade, err := strconv.Atoi(param.Grade)
@@ -38,6 +38,8 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 			response.SetCodeAndMsg(0, "成功创建班级。")
 			c.JSON(http.StatusOK, response)
 			return
+		} else {
+			engine.Trace(err)
 		}
 		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的college、specialty、grade和class参数。")
 		c.JSON(http.StatusOK, response)

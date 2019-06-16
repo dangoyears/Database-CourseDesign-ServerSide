@@ -19,10 +19,14 @@ func (engine *Engine) BindRoute(path string, grantedRoles []string, route func(*
 // getPermissionCheckRoute 检查一个API请求是否符合访问权限管理的要求。
 func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.HandlerFunc {
 	type permissionParam struct {
-		Token string `form:"token" binding:"required"`
+		Token string `json:"token" form:"token" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
+		// 需要改进
+		// https://gin-gonic.com/docs/examples/bind-body-into-dirrerent-structs/
+		//
+
 		if len(grantedRoles) == 0 { // 公开API
 			return // 允许任何人访问，将控制权交给下一个路由。
 		}
@@ -32,6 +36,7 @@ func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.Handler
 			comeInRole := engine.keeper.GetRole(param.Token)
 			for _, grantedRole := range grantedRoles {
 				if comeInRole == grantedRole {
+					c.Next()
 					return // 允许访问，将控制权交给下一个路由。
 				}
 			}

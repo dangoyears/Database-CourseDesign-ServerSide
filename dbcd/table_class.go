@@ -46,16 +46,21 @@ values (:1, null, :2, :3)`
 
 // DeleteClassBySpecialtyNameGradeAndCode 删除由专业、届别和班别指定的班级。
 func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName string, grade, code int) {
-	specialty := engine.GetSpecialtyByName(specialtyName)
-	if specialty == nil {
+	class := engine.GetClassBySpecialtyNameGradeAndCode(specialtyName, grade, code)
+	if class == nil {
 		return
 	}
-	specialtyID := specialty.SpecialtyID
 
-	query := `delete from "Class" where "SpecialtyID"=:1 and "Grade"=:2 and "ClassCode"=:3`
-	_, err := engine.db.Exec(query, specialtyID, grade, code)
+	queryDeleteRelatedStudents := `delete from "Students" where "ClassID"=:1`
+	_, err := engine.db.Exec(queryDeleteRelatedStudents, class.ClassID)
 	if err != nil {
-		log.Println(query, specialtyName, grade, code, err)
+		log.Println(queryDeleteRelatedStudents, class.ClassID, err)
+	}
+
+	query := `delete from "Class" where "ClassID"=:1`
+	_, err = engine.db.Exec(query, class.ClassID)
+	if err != nil {
+		log.Println(query, class.ClassID, err)
 	}
 }
 

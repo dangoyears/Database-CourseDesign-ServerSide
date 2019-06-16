@@ -111,5 +111,6 @@ func (engine *Engine) establishGateKeeper() {
 
 // Run 启动数据处理引擎。
 func (engine *Engine) Run() {
+	log.Println("Engine is online.")
 	engine.router.Run("localhost:12323")
 }

@@ -17,15 +17,6 @@ type Student struct {
 	Status         string
 }
 
-// StudentInfo 学生信息储存
-type StudentInfo struct {
-	AdmissionDate  time.Time
-	GraduationDate time.Time
-	StudentDegree  string
-	YearOfSchool   int
-	Status         string
-}
-
 // CreateStudent 创建学生。
 func (engine *Engine) CreateStudent(human Human, collegeName, specialtyName string, grade, classCode, studentNumber int) {
 	humanID := engine.CreateHuman(human)

@@ -4,11 +4,11 @@ import "log"
 
 // ClassInfo 是视图“ClassInfo”的抽象
 type ClassInfo struct {
-	CollegeName       string
-	SpecialtyName     string
-	Grade             int
-	ClassCode         int
-	TotalStudentCount int
+	CollegeName       string `json:"college"`
+	SpecialtyName     string `json:"specialty"`
+	Grade             int    `json:"grade"`
+	ClassCode         int    `json:"class"`
+	TotalStudentCount int    `json:"sum"`
 }
 
 // GetClassInfo 返回班级信息。

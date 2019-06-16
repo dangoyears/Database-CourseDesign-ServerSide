@@ -2,6 +2,7 @@ package dbcd
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,8 +13,8 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 	type writeCollegeEndpointParam struct {
 		CollegeName   string `form:"college" binding:"required"`
 		SpecialtyName string `form:"specialty" binding:"required"`
-		Grade         int    `form:"grade" binding:"required"`
-		ClassCode     int    `form:"class" binding:"required"`
+		Grade         string `form:"grade" binding:"required"`
+		ClassCode     string `form:"class" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
@@ -22,7 +23,16 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 
 		if c.ShouldBind(&param) == nil {
 			collegeName, specailtyName := param.CollegeName, param.SpecialtyName
-			grade, classCode := param.Grade, param.ClassCode
+
+			grade, err := strconv.Atoi(param.Grade)
+			if err != nil {
+				engine.Trace(err)
+			}
+			
+			classCode, err := strconv.Atoi(param.ClassCode)
+			if err != nil {
+				engine.Trace(err)
+			}
 
 			engine.CreateClass(collegeName, specailtyName, grade, classCode)
 			response.SetCodeAndMsg(0, "成功创建班级。")

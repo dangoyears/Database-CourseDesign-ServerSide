@@ -54,7 +54,6 @@ func (engine *Engine) GetStudentByStudentNubmer(studentNumber int) *Student {
 	var student Student
 	row := engine.db.QueryRow(query, studentNumber)
 	if err := row.Scan(&student.HumanID, &student.ClassID, &student.StudentNumber); err != nil {
-		log.Println(query, studentNumber, err)
 		return nil
 	}
 	return &student

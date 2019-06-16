@@ -51,7 +51,7 @@ func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName strin
 		return
 	}
 
-	queryDeleteRelatedStudents := `delete from "Students" where "ClassID"=:1`
+	queryDeleteRelatedStudents := `delete from "Student" where "ClassID"=:1`
 	_, err := engine.db.Exec(queryDeleteRelatedStudents, class.ClassID)
 	if err != nil {
 		log.Println(queryDeleteRelatedStudents, class.ClassID, err)
@@ -78,7 +78,6 @@ where "SpecialtyID"=:1 and "Grade"=:2 and "ClassCode"=:3`
 
 	var class Class
 	if err := result.Scan(&class.ClassID, &class.SpecialtyID, &class.MasterTeacherHumanID, &class.Grade, &class.ClassCode); err != nil {
-		log.Println(query, specailtyName, grade, code, err)
 		return nil
 	}
 	return &class

@@ -19,7 +19,7 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param loginEndpointParam
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			name, pass := param.Username, param.Password
 			var token string
 

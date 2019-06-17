@@ -17,7 +17,7 @@ func (engine *Engine) GetLogoutEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param logoutEndpointParam
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			token := param.Token
 
 			engine.keeper.RemoveToken(token)

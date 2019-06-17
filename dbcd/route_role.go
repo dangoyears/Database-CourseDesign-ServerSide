@@ -17,7 +17,7 @@ func (engine *Engine) GetRoleEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param roleEndpointParam
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			token := param.Token
 
 			role := engine.keeper.GetRole(token)

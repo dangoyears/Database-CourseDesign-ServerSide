@@ -20,7 +20,7 @@ func (engine *Engine) GetDeleteClassEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param deleteClassEndpointParam
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			engine.DeleteClassBySpecialtyNameGradeAndCode(param.SpecialtyName, param.Grade, param.ClassCode)
 
 			response.SetCodeAndMsg(0, "如无意外，指定的班级将被删除。")

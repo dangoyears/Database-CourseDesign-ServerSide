@@ -29,7 +29,7 @@ func (engine *Engine) GetWriteTeacherEndpoint() gin.HandlerFunc {
 		var param writeTeacherEndpointParam
 		var response = NewRouterResponse()
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			yearMonthAndDay := strings.Split(param.Birthday, "-")
 			if len(yearMonthAndDay) != 3 {
 				response.SetCodeAndMsg(1, "birthday格式不正确，必须为“yyyy-mm-dd”。")

@@ -18,7 +18,7 @@ func (engine *Engine) GetDeleteBothEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param deleteBothEndpointParam
 
-		if c.ShouldBind(&param) == nil {
+		if BindContextIntoStruct(c, &param) == nil {
 			switch param.Role {
 			case "teacher":
 				engine.DeleteTeacherByTeacherNumber(param.TeacherOrStudentNumber)

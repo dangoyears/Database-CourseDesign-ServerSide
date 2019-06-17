@@ -105,6 +105,7 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/delete/both", []string{"admin"}, engine.GetDeleteBothEndpoint())
 }
 
+// establishGateKeeper 建立用户状态管理器。
 func (engine *Engine) establishGateKeeper() {
 	engine.keeper = NewGateKeeper()
 }

@@ -37,11 +37,11 @@ func (engine *Engine) GetSpecialtyByName(name string) *Specialty {
 
 // DeleteSpecialtyByName 删除指定名称name的专业。
 func (engine *Engine) DeleteSpecialtyByName(name string) {
-	specailty := engine.GetSpecialtyByName(name)
-	if specailty == nil {
+	specialty := engine.GetSpecialtyByName(name)
+	if specialty == nil {
 		return
 	}
-	id := specailty.SpecialtyID
+	id := specialty.SpecialtyID
 
 	queryDeleteChildRecords := `delete from "Class" where "SpecialtyID"=:1`
 	if _, err := engine.db.Exec(queryDeleteChildRecords, id); err != nil {
@@ -75,8 +75,8 @@ func (engine *Engine) TestTableSpecialty() {
 	log.Println("Testing table Specialty.")
 
 	const (
-		testCollegeName   = "若此学院可见，数据表测试可能没有成功。"
-		testSpecialtyName = "若此专业可见，数据表测试可能没有成功。"
+		testCollegeName   = "（测试学院）"
+		testSpecialtyName = "（测试专业）"
 	)
 
 	engine.DeleteSpecialtyByName(testSpecialtyName)
@@ -99,6 +99,6 @@ func (engine *Engine) TestTableSpecialty() {
 	engine.DeleteCollegeByName(testCollegeName)
 
 	if engine.SpecialtyExists(testSpecialtyName) {
-		log.Panicln("Table Specialty test failed: Specailty with testSpecialtyName should NOT exist!")
+		log.Panicln("Table Specialty test failed: Specialty with testSpecialtyName should NOT exist!")
 	}
 }

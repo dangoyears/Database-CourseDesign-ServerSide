@@ -22,19 +22,19 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 
 		if BindContextIntoStruct(c, &param) == nil {
-			collegeName, specailtyName := param.CollegeName, param.SpecialtyName
+			collegeName, specialtyName := param.CollegeName, param.SpecialtyName
 
 			grade, err := strconv.Atoi(param.Grade)
 			if err != nil {
-				engine.Trace(err)
+				Trace(err)
 			}
 
 			classCode, err := strconv.Atoi(param.ClassCode)
 			if err != nil {
-				engine.Trace(err)
+				Trace(err)
 			}
 
-			engine.CreateClass(collegeName, specailtyName, grade, classCode)
+			engine.CreateClass(collegeName, specialtyName, grade, classCode)
 			response.SetCodeAndMsg(0, "成功创建班级。")
 			c.JSON(http.StatusOK, response)
 			return

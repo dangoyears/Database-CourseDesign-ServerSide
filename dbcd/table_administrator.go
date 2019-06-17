@@ -18,14 +18,14 @@ func (engine *Engine) GetAdministratorsCount() int {
 	return count
 }
 
-// AdministratorExists 返回具有name登陆名的管理员账户是否存在
+// AdministratorExists 返回具有name登陆名的管理员账户是否存在。
 func (engine *Engine) AdministratorExists(name string) bool {
 	query := `select count(*) from "Administrator where "AdminLoginName"=:1`
 	result := engine.db.QueryRow(query, name)
 
 	var count int
 	if err := result.Scan(&count); err != nil {
-		log.Println(name, err)
+		Trace(err, query, name)
 	}
 	return count >= 1
 }
@@ -47,7 +47,7 @@ func (engine *Engine) CreateAdministrator(user, pass string) {
 values (:1, :2)`
 	_, err := engine.db.Exec(query, user, passHash)
 	if err != nil {
-		log.Println(user, err)
+		Trace(err, query, user)
 	}
 }
 
@@ -67,7 +67,7 @@ func (engine *Engine) DeleteAdministratorByLoginName(name string) {
 	query := `delete from "Administrator" where "AdminLoginName"=:1`
 	_, err := engine.db.Exec(query, name)
 	if err != nil {
-		log.Println(name, err)
+		Trace(err, query, name)
 	}
 }
 
@@ -76,8 +76,8 @@ func (engine *Engine) TestTableAdministrator() {
 	log.Println("Testing table Administrator.")
 
 	const (
-		testName = "如果此用户名可见，表测试可能没有成功。"
-		testPass = "This is a password for test."
+		testName = "（测试管理员账户名）"
+		testPass = "（测试密码）"
 	)
 
 	engine.DeleteAdministratorByLoginName(testName)
@@ -89,11 +89,11 @@ func (engine *Engine) TestTableAdministrator() {
 		log.Panicln("Table Administrator test failed! countAfterCreate should be greater than countBeforeCreate by one.")
 	}
 	if engine.GetAdministratorByLoginName(testName) == nil {
-		log.Panicln("Table Administartor test failed! Should be able to getAdministratorbyLoginName.")
+		log.Panicln("Table Administrator test failed! Should be able to getAdministratorbyLoginName.")
 	}
 
 	engine.DeleteAdministratorByLoginName(testName)
 	if engine.GetAdministratorByLoginName(testName) != nil {
-		log.Panicln("Table Administartor test failed! Should NOT be able to getAdministratorbyLoginName.")
+		log.Panicln("Table Administrator test failed! Should NOT be able to getAdministratorbyLoginName.")
 	}
 }

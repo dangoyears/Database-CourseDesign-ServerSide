@@ -21,6 +21,7 @@ func main() {
 	engine.Run()
 }
 
+// loadConfiguration 从config.yaml中加载配置信息。
 func loadConfiguration() (config dbcd.EngineConfiguration) {
 	log.Println("Loading configuration from file: config.yaml")
 	configYaml, err := ioutil.ReadFile("config.yaml")
@@ -36,6 +37,7 @@ func loadConfiguration() (config dbcd.EngineConfiguration) {
 	return config
 }
 
+// verifyConfiguration 验证当前加载的配置信息是否正确。
 func verifyConfiguration(config dbcd.EngineConfiguration) {
 	log.Println("Verifying configuration...")
 	db, err := sql.Open("goracle", config.OracleConnectString)

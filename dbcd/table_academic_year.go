@@ -17,7 +17,7 @@ func (engine *Engine) AcademicYearExists(year int) bool {
 	var count int
 	err := result.Scan(&count)
 	if err != nil {
-		log.Println(year, err)
+		Trace(err, query, year)
 	}
 	return count >= 1
 }
@@ -27,7 +27,7 @@ func (engine *Engine) CreateAcademicYear(year int) {
 	query := `insert into "AcademicYear" values (:1)`
 	_, err := engine.db.Exec(query, year)
 	if err != nil {
-		log.Println(year, err)
+		Trace(err, query, year)
 	}
 }
 
@@ -36,7 +36,7 @@ func (engine *Engine) DeleteAcademicYear(year int) {
 	query := `delete from "AcademicYear" where "AcademicYear"=:1`
 	_, err := engine.db.Exec(query, year)
 	if err != nil {
-		log.Println(year, err)
+		Trace(err, query, year)
 	}
 }
 

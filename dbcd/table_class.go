@@ -24,7 +24,7 @@ func (engine *Engine) ClassExists(collegeName, specialtyName string, grade, code
 
 	var count int
 	if err := result.Scan(&count); err != nil {
-		log.Println(query, collegeName, specialtyName, grade, code)
+		Trace(err, query, collegeName, specialtyName, grade, code)
 	}
 	return count >= 1
 }
@@ -40,7 +40,7 @@ func (engine *Engine) CreateClass(collegeName, specialtyName string, grade, code
 values (:1, null, :2, :3)`
 	_, err := engine.db.Exec(query, specialtyID, grade, code)
 	if err != nil {
-		log.Println(query, specialtyID, grade, code, err)
+		Trace(err, query, specialtyID, grade, code)
 	}
 }
 
@@ -54,7 +54,7 @@ func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName strin
 	queryDeleteRelatedStudents := `delete from "Student" where "ClassID"=:1`
 	_, err := engine.db.Exec(queryDeleteRelatedStudents, class.ClassID)
 	if err != nil {
-		log.Println(queryDeleteRelatedStudents, class.ClassID, err)
+		Trace(err, queryDeleteRelatedStudents, class.ClassID)
 	}
 
 	query := `delete from "Class" where "ClassID"=:1`
@@ -88,8 +88,8 @@ func (engine *Engine) TestTableClass() {
 	log.Println("Testint table Class.")
 
 	const (
-		testCollegeName   = "如果此学院可见，数据表测试可能没有成功。"
-		testSpecialtyName = "如果此专业可见，数据表测试可能没有成功。"
+		testCollegeName   = "（测试学院）"
+		testSpecialtyName = "（测试专业）"
 		testGrade         = 10
 		testClassCode     = 24
 	)
@@ -99,6 +99,14 @@ func (engine *Engine) TestTableClass() {
 	engine.CreateClass(testCollegeName, testSpecialtyName, testGrade, testClassCode)
 	if !engine.ClassExists(testCollegeName, testSpecialtyName, testGrade, testClassCode) {
 		log.Panicln("Table Class test failed: testClass should exist.")
+	}
+
+	class := engine.GetClassBySpecialtyNameGradeAndCode(testSpecialtyName, testGrade, testClassCode)
+	if class.MasterTeacherHumanID != nil {
+		log.Panicln("Table Class test failed: MasterTeacherHumanID should be nil.")
+	}
+	if class.Grade != testGrade || class.ClassCode != testClassCode {
+		log.Panicln("Table Class test failed: Grade or ClassCode miss match.")
 	}
 
 	engine.DeleteClassBySpecialtyNameGradeAndCode(testSpecialtyName, testGrade, testClassCode)

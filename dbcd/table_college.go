@@ -17,7 +17,7 @@ func (engine *Engine) CollegeExists(name string) bool {
 
 	var count int
 	if err := result.Scan(&count); err != nil {
-		log.Println(query, name, err)
+		Trace(err, query, name)
 	}
 	return count >= 1
 }
@@ -27,11 +27,11 @@ func (engine *Engine) CollegeExists(name string) bool {
 func (engine *Engine) CreateCollege(name string) {
 	query := `insert into "College" ("CollegeName") values (:1)`
 	if _, err := engine.db.Exec(query, name); err != nil {
-		log.Println(query, name, err)
+		Trace(err, query, name)
 	}
 }
 
-// GetCollegeByID 返回由ID指定的学院
+// GetCollegeByID 返回由ID指定的学院。
 func (engine *Engine) GetCollegeByID(id int) *College {
 	query := `select "CollegeID", "CollegeName" from "College" where "CollegeID"=:1`
 	result := engine.db.QueryRow(query, id)
@@ -57,7 +57,7 @@ func (engine *Engine) GetCollegeByName(name string) *College {
 	return &college
 }
 
-// DeleteCollegeByName 从数据库中删除College结构。
+// DeleteCollegeByName 从数据库中删除College项。
 func (engine *Engine) DeleteCollegeByName(name string) {
 	college := engine.GetCollegeByName(name)
 	if college == nil {
@@ -65,16 +65,26 @@ func (engine *Engine) DeleteCollegeByName(name string) {
 	}
 	id := college.CollegeID
 
-	// 删除College的子记录
-	queryDeleteChildRecords := `delete from "Specialty" where "CollegeID"=:1`
-	if _, err := engine.db.Exec(queryDeleteChildRecords, id); err != nil {
-		log.Println(queryDeleteChildRecords, id, err)
+	// 删除College名下的教师。
+	queryDeleteRelatedTeachers := `delete from "Teacher" where "CollegeID"=:1`
+	if _, err := engine.db.Exec(queryDeleteRelatedTeachers, id); err != nil {
+		Trace(err, queryDeleteRelatedTeachers, id)
 	}
 
-	// 删除College
+	// 删除College名下的专业和班级。
+	queryDeleteRelatedClasses := `delete from "Class" where "SpecialtyID" in (select "SpecialtyID" from "Specialty" where "CollegeID"=:1)`
+	queryDeleteRelatedSpecialties := `delete from "Specialty" where "CollegeID"=:1`
+	if _, err := engine.db.Exec(queryDeleteRelatedClasses, id); err != nil {
+		Trace(err, queryDeleteRelatedClasses, id)
+	}
+	if _, err := engine.db.Exec(queryDeleteRelatedSpecialties, id); err != nil {
+		Trace(err, queryDeleteRelatedSpecialties, id)
+	}
+
+	// 删除College。
 	query := `delete from "College" where "CollegeID"=:1`
 	if _, err := engine.db.Exec(query, id); err != nil {
-		log.Println(query, id, err)
+		Trace(err, query, id)
 	}
 }
 
@@ -82,11 +92,11 @@ func (engine *Engine) DeleteCollegeByName(name string) {
 func (engine *Engine) TestTableCollege() {
 	log.Println("Testing table College.")
 
-	const testCollegeName = "若此学院可见，数据表测试可能没有成功。"
+	const testCollegeName = "（测试学院）"
 
 	engine.DeleteCollegeByName(testCollegeName)
-	engine.CreateCollege(testCollegeName)
 
+	engine.CreateCollege(testCollegeName)
 	if !engine.CollegeExists(testCollegeName) {
 		log.Panicln("Table College test failed! College with testCollegeName should exist.")
 	}
@@ -106,7 +116,6 @@ func (engine *Engine) TestTableCollege() {
 	}
 
 	engine.DeleteCollegeByName(testCollegeName)
-
 	if engine.CollegeExists(testCollegeName) {
 		log.Panicln("Table College test failed! College with name testCollegeName should NOT exist.")
 	}

@@ -65,22 +65,6 @@ func (engine *Engine) DeleteCollegeByName(name string) {
 	}
 	id := college.CollegeID
 
-	// 删除College名下的教师。
-	queryDeleteRelatedTeachers := `delete from "Teacher" where "CollegeID"=:1`
-	if _, err := engine.db.Exec(queryDeleteRelatedTeachers, id); err != nil {
-		Trace(err, queryDeleteRelatedTeachers, id)
-	}
-
-	// 删除College名下的专业和班级。
-	queryDeleteRelatedClasses := `delete from "Class" where "SpecialtyID" in (select "SpecialtyID" from "Specialty" where "CollegeID"=:1)`
-	queryDeleteRelatedSpecialties := `delete from "Specialty" where "CollegeID"=:1`
-	if _, err := engine.db.Exec(queryDeleteRelatedClasses, id); err != nil {
-		Trace(err, queryDeleteRelatedClasses, id)
-	}
-	if _, err := engine.db.Exec(queryDeleteRelatedSpecialties, id); err != nil {
-		Trace(err, queryDeleteRelatedSpecialties, id)
-	}
-
 	// 删除College。
 	query := `delete from "College" where "CollegeID"=:1`
 	if _, err := engine.db.Exec(query, id); err != nil {

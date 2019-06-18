@@ -29,8 +29,8 @@ values (:1, :2, :3, :4, :5, :6)`
 	return engine.GetHumanIDByIdentity(human.Identity)
 }
 
-// HumanWithIDExists 返回数据表中是否存在传入自然人ID的对象。
-func (engine *Engine) HumanWithIDExists(id int) bool {
+// ExistHumanWithID 返回数据表中是否存在传入自然人ID的对象。
+func (engine *Engine) ExistHumanWithID(id int) bool {
 	query := `select count(*) from "Human" where "HumanID"=:1`
 	result := engine.db.QueryRow(query, id)
 
@@ -41,8 +41,8 @@ func (engine *Engine) HumanWithIDExists(id int) bool {
 	return count >= 1
 }
 
-// HumanWithIdentityExists 返回数据表中是否存在对应身份证的对象。
-func (engine *Engine) HumanWithIdentityExists(identity string) bool {
+// ExistHumanWithIdentity 返回数据表中是否存在对应身份证的对象。
+func (engine *Engine) ExistHumanWithIdentity(identity string) bool {
 	query := `select count(*) from "Human" where "Identity"=:1`
 	result := engine.db.QueryRow(query, identity)
 
@@ -127,34 +127,35 @@ func (engine *Engine) DeleteHumanByIdentity(identity string) {
 func (engine *Engine) TestTableHuman() {
 	log.Println("Testing table Human.")
 
+	// 准备测试环境。
 	var (
 		testBirthday     = time.Date(2019, time.May, 28, 0, 0, 0, 0, time.UTC)
 		testSex          = "男"
 		testIdentity     = "123456789012345678"
 		testIdentity2    = "098765432112345678"
-		testNotes        = "这是测试使用的字段，若此数据项可见，则数据表测试可能没有成功。"
-		testPasswordHash = "One$Two$Three"
+		testNotes        = "（测试字段）"
+		testPasswordHash = "（测试密码哈希）"
 	)
-
+	testHuman := Human{
+		Name: "（测试自然人）",
+	}
+	testHuman.Identity = testIdentity
 	engine.DeleteHumanByIdentity(testIdentity)
 	engine.DeleteHumanByIdentity(testIdentity2)
 
-	testHuman := Human{
-		Name: "测试人",
-	}
-	testHuman.Identity = testIdentity
-
+	// 测试CREATE和READ。
 	testHumanID := engine.CreateHuman(testHuman)
 	if testHumanID == 0 {
 		log.Panicln("Table Human test failed: ID should NOT be empty.")
 	}
-	if !engine.HumanWithIDExists(testHumanID) {
+	if !engine.ExistHumanWithID(testHumanID) {
 		log.Panicln("Table Human test failed: HumanWithIDExists should return TRUE.")
 	}
-	if !engine.HumanWithIdentityExists(testHuman.Identity) {
+	if !engine.ExistHumanWithIdentity(testHuman.Identity) {
 		log.Panicln("Table Human test failed: HumanWithIdentityExists should return TRUE.")
 	}
 
+	// 测试UPDATE。
 	testHuman.Birthday = testBirthday
 	testHuman.Sex = testSex
 	testHuman.Identity = testIdentity2
@@ -176,11 +177,12 @@ func (engine *Engine) TestTableHuman() {
 		log.Panicln("Table Human test failed: testHuman2.Notes is not consist with testNotes.")
 	}
 
+	// 测试DELETE。
 	engine.DeleteHumanByID(testHumanID)
-	if engine.HumanWithIDExists(testHumanID) {
+	if engine.ExistHumanWithID(testHumanID) {
 		log.Panicln("Table Human test failed: HumanWithIDExists should return FALSE.")
 	}
-	if engine.HumanWithIdentityExists(testHuman.Identity) {
+	if engine.ExistHumanWithIdentity(testHuman.Identity) {
 		log.Panicln("Table Human test failed: HumanWithIdentityExists should return FALSE.")
 	}
 }

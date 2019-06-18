@@ -11,8 +11,23 @@ type Specialty struct {
 	SpecialtyName string
 }
 
-// SpecialtyExists 返回具有name名称的专业是否存在。
-func (engine *Engine) SpecialtyExists(name string) bool {
+// CreateSpecialty 在指定学院下创建专业。
+func (engine *Engine) CreateSpecialty(collegeName, specialtyName string) {
+	query := `insert into "Specialty" ("CollegeID", "SpecialtyName") values (:1, :2)`
+
+	if !engine.ExistCollege(collegeName) {
+		engine.CreateCollege(collegeName)
+	}
+	college := engine.GetCollegeByName(collegeName)
+
+	_, err := engine.db.Exec(query, college.CollegeID, specialtyName)
+	if err != nil {
+		log.Println(query, collegeName, specialtyName, err)
+	}
+}
+
+// ExistSpecialty 返回具有name名称的专业是否存在。
+func (engine *Engine) ExistSpecialty(name string) bool {
 	query := `select count(*) from "Specialty" where "SpecialtyName"=:1`
 	result := engine.db.QueryRow(query, name)
 
@@ -55,38 +70,25 @@ func (engine *Engine) DeleteSpecialtyByName(name string) {
 	}
 }
 
-// CreateSpecialty 在指定学院下创建专业。
-func (engine *Engine) CreateSpecialty(collegeName, specialtyName string) {
-	query := `insert into "Specialty" ("CollegeID", "SpecialtyName") values (:1, :2)`
-
-	if !engine.CollegeExists(collegeName) {
-		engine.CreateCollege(collegeName)
-	}
-	college := engine.GetCollegeByName(collegeName)
-
-	_, err := engine.db.Exec(query, college.CollegeID, specialtyName)
-	if err != nil {
-		log.Println(query, collegeName, specialtyName, err)
-	}
-}
-
 // TestTableSpecialty 测试表Specialty。
 func (engine *Engine) TestTableSpecialty() {
 	log.Println("Testing table Specialty.")
 
+	// 准备测试环境。
 	const (
 		testCollegeName   = "（测试学院）"
 		testSpecialtyName = "（测试专业）"
 	)
-
 	engine.DeleteSpecialtyByName(testSpecialtyName)
 	engine.DeleteCollegeByName(testCollegeName)
 
+	// 测试CREATE。
 	engine.CreateSpecialty(testCollegeName, testSpecialtyName)
-	if !engine.SpecialtyExists(testSpecialtyName) {
+	if !engine.ExistSpecialty(testSpecialtyName) {
 		log.Panicln("Table Specialty test failed! Specialty with testSpecialtyName should exist.")
 	}
 
+	// 测试READ。
 	specialty := engine.GetSpecialtyByName(testSpecialtyName)
 	if specialty == nil {
 		log.Panicln("Table Specialty test failed: specialty should NOT be nil!")
@@ -95,10 +97,10 @@ func (engine *Engine) TestTableSpecialty() {
 		log.Panicln("Table Specialty test failed! College ID should be same.")
 	}
 
+	// 测试DELETE。
 	engine.DeleteSpecialtyByName(testSpecialtyName)
 	engine.DeleteCollegeByName(testCollegeName)
-
-	if engine.SpecialtyExists(testSpecialtyName) {
+	if engine.ExistSpecialty(testSpecialtyName) {
 		log.Panicln("Table Specialty test failed: Specialty with testSpecialtyName should NOT exist!")
 	}
 }

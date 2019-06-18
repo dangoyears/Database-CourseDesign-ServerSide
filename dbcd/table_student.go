@@ -21,7 +21,7 @@ type Student struct {
 func (engine *Engine) CreateStudent(human Human, collegeName, specialtyName string, grade, classCode, studentNumber int) {
 	humanID := engine.CreateHuman(human)
 
-	if !engine.ClassExists(collegeName, specialtyName, grade, classCode) {
+	if !engine.ExistClass(collegeName, specialtyName, grade, classCode) {
 		engine.CreateClass(collegeName, specialtyName, grade, classCode)
 	}
 	classID := engine.GetClassBySpecialtyNameGradeAndCode(specialtyName, grade, classCode).ClassID
@@ -33,8 +33,8 @@ func (engine *Engine) CreateStudent(human Human, collegeName, specialtyName stri
 	}
 }
 
-// StudentExists 返回指定studentNumber的学生是否存在。
-func (engine *Engine) StudentExists(studentNumber int) bool {
+// ExistStudent 返回指定studentNumber的学生是否存在。
+func (engine *Engine) ExistStudent(studentNumber int) bool {
 	return engine.GetStudentByStudentNubmer(studentNumber) != nil
 }
 
@@ -79,6 +79,7 @@ func (engine *Engine) DeleteStudentByStudentNubmer(studentNumber int) {
 func (engine *Engine) TestTableStudent() {
 	log.Println("Testing table Student.")
 
+	// 准备测试环境。
 	const (
 		testName          = "（测试学生）"
 		testIdentity      = "123456789012345678"
@@ -88,19 +89,21 @@ func (engine *Engine) TestTableStudent() {
 		testClassCode     = 24
 		testStudentNumber = 1706300000
 	)
-
-	engine.DeleteStudentByStudentNubmer(testStudentNumber)
-
 	var human = Human{
 		Name:     testName,
 		Identity: testIdentity,
 	}
+	engine.DeleteStudentByStudentNubmer(testStudentNumber)
+
+	// 测试CREATE。
 	engine.CreateStudent(human, testCollegeName, testSpecialtyName, testGrade, testClassCode, testStudentNumber)
-	if !engine.StudentExists(testStudentNumber) {
+	if !engine.ExistStudent(testStudentNumber) {
 		log.Panicln("Table Student test failed: student should exist.")
 	}
+
+	// 测试DELETE。
 	engine.DeleteStudentByStudentNubmer(testStudentNumber)
-	if engine.StudentExists(testStudentNumber) {
+	if engine.ExistStudent(testStudentNumber) {
 		log.Panicln("Table Student test failed: student should NOT exist.")
 	}
 }

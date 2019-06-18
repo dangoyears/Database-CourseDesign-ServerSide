@@ -11,8 +11,23 @@ type Class struct {
 	ClassCode            int
 }
 
-// ClassExists 返回指定专业、届别和班别的班级是否存在
-func (engine *Engine) ClassExists(collegeName, specialtyName string, grade, code int) bool {
+// CreateClass 根据专业名specialty、届别grade和班别code来创建班级。
+func (engine *Engine) CreateClass(collegeName, specialtyName string, grade, code int) {
+	if !engine.ExistSpecialty(specialtyName) {
+		engine.CreateSpecialty(collegeName, specialtyName)
+	}
+	specialtyID := engine.GetSpecialtyByName(specialtyName).SpecialtyID
+
+	query := `insert into "Class" ("SpecialtyID", "MasterTeacherHumanID", "Grade", "ClassCode")
+values (:1, null, :2, :3)`
+	_, err := engine.db.Exec(query, specialtyID, grade, code)
+	if err != nil {
+		Trace(err, query, specialtyID, grade, code)
+	}
+}
+
+// ExistClass 返回指定专业、届别和班别的班级是否存在
+func (engine *Engine) ExistClass(collegeName, specialtyName string, grade, code int) bool {
 	specialty := engine.GetSpecialtyByName(specialtyName)
 	if specialty == nil {
 		return false
@@ -29,19 +44,23 @@ func (engine *Engine) ClassExists(collegeName, specialtyName string, grade, code
 	return count >= 1
 }
 
-// CreateClass 根据专业名specialty、届别grade和班别code来创建班级。
-func (engine *Engine) CreateClass(collegeName, specialtyName string, grade, code int) {
-	if !engine.SpecialtyExists(specialtyName) {
-		engine.CreateSpecialty(collegeName, specialtyName)
+// GetClassBySpecialtyNameGradeAndCode 根据班级的专业名称、届别和班别取得班级信息。
+func (engine *Engine) GetClassBySpecialtyNameGradeAndCode(specailtyName string, grade, code int) *Class {
+	specialty := engine.GetSpecialtyByName(specailtyName)
+	if specialty == nil {
+		return nil
 	}
-	specialtyID := engine.GetSpecialtyByName(specialtyName).SpecialtyID
+	specialtyID := specialty.SpecialtyID
 
-	query := `insert into "Class" ("SpecialtyID", "MasterTeacherHumanID", "Grade", "ClassCode")
-values (:1, null, :2, :3)`
-	_, err := engine.db.Exec(query, specialtyID, grade, code)
-	if err != nil {
-		Trace(err, query, specialtyID, grade, code)
+	query := `select "ClassID", "SpecialtyID", "MasterTeacherHumanID", "Grade", "ClassCode" from "Class"
+where "SpecialtyID"=:1 and "Grade"=:2 and "ClassCode"=:3`
+	result := engine.db.QueryRow(query, specialtyID, grade, code)
+
+	var class Class
+	if err := result.Scan(&class.ClassID, &class.SpecialtyID, &class.MasterTeacherHumanID, &class.Grade, &class.ClassCode); err != nil {
+		return nil
 	}
+	return &class
 }
 
 // DeleteClassBySpecialtyNameGradeAndCode 删除由专业、届别和班别指定的班级。
@@ -64,43 +83,26 @@ func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName strin
 	}
 }
 
-// GetClassBySpecialtyNameGradeAndCode 根据班级的专业名称、届别和班别取得班级信息。
-func (engine *Engine) GetClassBySpecialtyNameGradeAndCode(specailtyName string, grade, code int) *Class {
-	specialty := engine.GetSpecialtyByName(specailtyName)
-	if specialty == nil {
-		return nil
-	}
-	specialtyID := specialty.SpecialtyID
-
-	query := `select "ClassID", "SpecialtyID", "MasterTeacherHumanID", "Grade", "ClassCode" from "Class"
-where "SpecialtyID"=:1 and "Grade"=:2 and "ClassCode"=:3`
-	result := engine.db.QueryRow(query, specialtyID, grade, code)
-
-	var class Class
-	if err := result.Scan(&class.ClassID, &class.SpecialtyID, &class.MasterTeacherHumanID, &class.Grade, &class.ClassCode); err != nil {
-		return nil
-	}
-	return &class
-}
-
 // TestTableClass 测试Class表。
 func (engine *Engine) TestTableClass() {
 	log.Println("Testint table Class.")
 
+	// 准备测试环境。
 	const (
 		testCollegeName   = "（测试学院）"
 		testSpecialtyName = "（测试专业）"
 		testGrade         = 10
 		testClassCode     = 24
 	)
-
 	engine.DeleteClassBySpecialtyNameGradeAndCode(testSpecialtyName, testGrade, testClassCode)
 
+	// 测试CREATE。
 	engine.CreateClass(testCollegeName, testSpecialtyName, testGrade, testClassCode)
-	if !engine.ClassExists(testCollegeName, testSpecialtyName, testGrade, testClassCode) {
+	if !engine.ExistClass(testCollegeName, testSpecialtyName, testGrade, testClassCode) {
 		log.Panicln("Table Class test failed: testClass should exist.")
 	}
 
+	// 测试READ。
 	class := engine.GetClassBySpecialtyNameGradeAndCode(testSpecialtyName, testGrade, testClassCode)
 	if class.MasterTeacherHumanID != nil {
 		log.Panicln("Table Class test failed: MasterTeacherHumanID should be nil.")
@@ -109,8 +111,9 @@ func (engine *Engine) TestTableClass() {
 		log.Panicln("Table Class test failed: Grade or ClassCode miss match.")
 	}
 
+	// 测试DELETE。
 	engine.DeleteClassBySpecialtyNameGradeAndCode(testSpecialtyName, testGrade, testClassCode)
-	if engine.ClassExists(testCollegeName, testCollegeName, testGrade, testClassCode) {
+	if engine.ExistClass(testCollegeName, testCollegeName, testGrade, testClassCode) {
 		log.Panicln("Table Class test failed: testClass should NOT exist.")
 	}
 }

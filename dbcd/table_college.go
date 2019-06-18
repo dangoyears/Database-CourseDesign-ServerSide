@@ -10,8 +10,17 @@ type College struct {
 	CollegeName string
 }
 
-// CollegeExists 返回具有指定名称name的College是否存在。
-func (engine *Engine) CollegeExists(name string) bool {
+// CreateCollege 创建并返回由参数指定的College结构的指针。
+// 若College存在，则返回现有结构的指针。
+func (engine *Engine) CreateCollege(name string) {
+	query := `insert into "College" ("CollegeName") values (:1)`
+	if _, err := engine.db.Exec(query, name); err != nil {
+		Trace(err, query, name)
+	}
+}
+
+// ExistCollege 返回具有指定名称name的College是否存在。
+func (engine *Engine) ExistCollege(name string) bool {
 	query := `select count(*) from "College" where "CollegeName"=:1`
 	result := engine.db.QueryRow(query, name)
 
@@ -20,15 +29,6 @@ func (engine *Engine) CollegeExists(name string) bool {
 		Trace(err, query, name)
 	}
 	return count >= 1
-}
-
-// CreateCollege 创建并返回由参数指定的College结构的指针。
-// 若College存在，则返回现有结构的指针。
-func (engine *Engine) CreateCollege(name string) {
-	query := `insert into "College" ("CollegeName") values (:1)`
-	if _, err := engine.db.Exec(query, name); err != nil {
-		Trace(err, query, name)
-	}
 }
 
 // GetCollegeByID 返回由ID指定的学院。
@@ -92,15 +92,17 @@ func (engine *Engine) DeleteCollegeByName(name string) {
 func (engine *Engine) TestTableCollege() {
 	log.Println("Testing table College.")
 
+	// 准备测试环境。
 	const testCollegeName = "（测试学院）"
-
 	engine.DeleteCollegeByName(testCollegeName)
 
+	// 测试CREATE。
 	engine.CreateCollege(testCollegeName)
-	if !engine.CollegeExists(testCollegeName) {
+	if !engine.ExistCollege(testCollegeName) {
 		log.Panicln("Table College test failed! College with testCollegeName should exist.")
 	}
 
+	// 测试READ。
 	college := engine.GetCollegeByName(testCollegeName)
 	if college == nil {
 		log.Panicln("Table College test failed! college should NOT be nil.")
@@ -115,8 +117,9 @@ func (engine *Engine) TestTableCollege() {
 		log.Panicln("Table College test failed! CollegeName should be same with testCollegeName, not " + collegeName + " .")
 	}
 
+	// 测试Delete。
 	engine.DeleteCollegeByName(testCollegeName)
-	if engine.CollegeExists(testCollegeName) {
+	if engine.ExistCollege(testCollegeName) {
 		log.Panicln("Table College test failed! College with name testCollegeName should NOT exist.")
 	}
 }

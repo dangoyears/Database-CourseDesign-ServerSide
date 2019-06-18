@@ -16,7 +16,7 @@ type Teacher struct {
 func (engine *Engine) CreateTeacher(human Human, collegeName string, teacherNumber int, graduationSchool, position, teacherDegree string) {
 	humanID := engine.CreateHuman(human)
 
-	if !engine.CollegeExists(collegeName) {
+	if !engine.ExistCollege(collegeName) {
 		engine.CreateCollege(collegeName)
 	}
 	collegeID := engine.GetCollegeByName(collegeName).CollegeID
@@ -29,8 +29,8 @@ values (:1, :2, :3, :4, :5, :6)`
 	}
 }
 
-// TeacherExists 返回指定teachernNumber的教师是否存在。
-func (engine *Engine) TeacherExists(teacherNumber int) bool {
+// ExistTeacher 返回指定teachernNumber的教师是否存在。
+func (engine *Engine) ExistTeacher(teacherNumber int) bool {
 	return engine.GetTeacherByTeacherNumber(teacherNumber) != nil
 }
 
@@ -76,19 +76,19 @@ func (engine *Engine) TestTableTeacher() {
 		testPosition         = "教务办主任"
 		testTeacherDegree    = "博士后"
 	)
-
 	engine.DeleteTeacherByTeacherNumber(testTeacherNumber)
 
 	var human = Human{
 		Name:     testName,
 		Identity: testIdentity,
 	}
+
 	engine.CreateTeacher(human, testCollegeName, testTeacherNumber, testGraduationSchool, testPosition, testTeacherDegree)
-	if !engine.TeacherExists(testTeacherNumber) {
+	if !engine.ExistTeacher(testTeacherNumber) {
 		log.Panicln("Table Teacher test failed: teacher should exist.")
 	}
 	engine.DeleteTeacherByTeacherNumber(testTeacherNumber)
-	if engine.TeacherExists(testTeacherNumber) {
+	if engine.ExistTeacher(testTeacherNumber) {
 		log.Panicln("Table Teacher test failed: teacher should NOT exist.")
 	}
 }

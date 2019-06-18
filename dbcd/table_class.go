@@ -63,6 +63,17 @@ where "SpecialtyID"=:1 and "Grade"=:2 and "ClassCode"=:3`
 	return &class
 }
 
+// DeleteClassByID 删除由CollegeID指定的班级。
+func (engine *Engine) DeleteClassByID(id int) {
+	engine.DeleteStudentsByClassID(id)
+
+	query := `delete from "Class" where "ClassID"=:1`
+	_, err := engine.db.Exec(query, id)
+	if err != nil {
+		Trace(query, id, err)
+	}
+}
+
 // DeleteClassBySpecialtyNameGradeAndCode 删除由专业、届别和班别指定的班级。
 func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName string, grade, code int) {
 	class := engine.GetClassBySpecialtyNameGradeAndCode(specialtyName, grade, code)
@@ -70,17 +81,7 @@ func (engine *Engine) DeleteClassBySpecialtyNameGradeAndCode(specialtyName strin
 		return
 	}
 
-	queryDeleteRelatedStudents := `delete from "Student" where "ClassID"=:1`
-	_, err := engine.db.Exec(queryDeleteRelatedStudents, class.ClassID)
-	if err != nil {
-		Trace(err, queryDeleteRelatedStudents, class.ClassID)
-	}
-
-	query := `delete from "Class" where "ClassID"=:1`
-	_, err = engine.db.Exec(query, class.ClassID)
-	if err != nil {
-		log.Println(query, class.ClassID, err)
-	}
+	engine.DeleteClassByID(class.ClassID)
 }
 
 // TestTableClass 测试Class表。

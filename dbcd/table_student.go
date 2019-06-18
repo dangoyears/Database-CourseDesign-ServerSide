@@ -50,12 +50,60 @@ func (engine *Engine) GetStudentByStudentNubmer(studentNumber int) *Student {
 	return &student
 }
 
+// GetStudentsByClassID 获取指定ClassID的学生
+func (engine *Engine) GetStudentsByClassID(classID int) []Student {
+	query := `select "StudentNumber" from "Student" where "ClassID"=:1`
+	rows, err := engine.db.Query(query, classID)
+	if err != nil {
+		Trace(err, query, classID)
+	}
+	defer rows.Close()
+
+	var studentNumbers []int
+	for rows.Next() {
+		var number int
+		if err := rows.Scan(&number); err != nil {
+			Trace(err)
+		}
+		studentNumbers = append(studentNumbers, number)
+	}
+
+	var students []Student
+	for _, number := range studentNumbers {
+		student := engine.GetStudentByStudentNubmer(number)
+		if student != nil {
+			students = append(students, *student)
+		}
+	}
+	return students
+}
+
 // UpdateStudent 更新指定学号studentNumber学生的信息。
 func (engine *Engine) UpdateStudent(studentNumber int, info StudentInfo) {
 	query := `update "Student" set "AdmissionDate"=:1, "GraduationDate"=:2, "StudentDegree"=:3, "YearOfSchool"=:4, "Status"=:5 where "StudentNumber"=:6`
 	_, err := engine.db.Exec(query, info.AdmissionDate, info.GraduationDate, info.StudentDegree, info.YearOfSchool, info.Status, studentNumber)
 	if err != nil {
 		log.Println(query, studentNumber, err)
+	}
+}
+
+// DeleteStudentByID 删除指定HumanID的学生。
+func (engine *Engine) DeleteStudentByID(id int) {
+	query := `delete from "Student" where "HumanID"=:1`
+	_, err := engine.db.Exec(query, id)
+	if err != nil {
+		Trace(err, query, id)
+	}
+
+	engine.DeleteHumanByID(id)
+}
+
+// DeleteStudentsByClassID 删除指定ClassID的学生。
+func (engine *Engine) DeleteStudentsByClassID(classID int) {
+	students := engine.GetStudentsByClassID(classID)
+
+	for _, student := range students {
+		engine.DeleteStudentByStudentNubmer(student.StudentNumber)
 	}
 }
 

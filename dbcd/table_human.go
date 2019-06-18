@@ -23,7 +23,7 @@ values (:1, :2, :3, :4, :5, :6)`
 
 	_, err := engine.db.Exec(query, human.Name, human.Sex, human.Birthday, human.Identity, human.Notes, human.PasswordHash)
 	if err != nil {
-		log.Println(query, human.Name, err)
+		Trace(err, query, human.Name)
 	}
 
 	return engine.GetHumanIDByIdentity(human.Identity)
@@ -36,7 +36,7 @@ func (engine *Engine) ExistHumanWithID(id int) bool {
 
 	var count int
 	if err := result.Scan(&count); err != nil {
-		log.Println(query, id, err)
+		Trace(err, query, id)
 	}
 	return count >= 1
 }
@@ -48,7 +48,7 @@ func (engine *Engine) ExistHumanWithIdentity(identity string) bool {
 
 	var count int
 	if err := result.Scan(&count); err != nil {
-		log.Println(query, identity, err)
+		Trace(err, query, identity)
 	}
 	return count >= 1
 }
@@ -61,7 +61,7 @@ func (engine *Engine) GetHumanIDByIdentity(identity string) int {
 
 	var id int
 	if err := result.Scan(&id); err != nil {
-		log.Println(query, identity, err)
+		Trace(err, query, identity)
 		return 0
 	}
 	return id
@@ -73,7 +73,7 @@ func (engine *Engine) GetHumanByID(id int) *Human {
 	result := engine.db.QueryRow(query, id)
 	var human Human
 	if err := result.Scan(&human.HumanID, &human.Name, &human.Sex, &human.Birthday, &human.Identity, &human.Notes, &human.PasswordHash); err != nil {
-		log.Println(query, human.Name, err)
+		Trace(err, query, human.Name)
 		return nil
 	}
 	return &human
@@ -95,7 +95,7 @@ func (engine *Engine) UpdateHumanByID(human Human, id int) {
 	query := `update "Human" set "Name"=:1, "Sex"=:2, "Birthday"=:3, "Identity"=:4, "Notes"=:5, "PasswordHash"=:6 where "HumanID"=:7`
 	_, err := engine.db.Exec(query, human.Name, human.Sex, human.Birthday, human.Identity, human.Notes, human.PasswordHash, id)
 	if err != nil {
-		log.Println(query, id, err)
+		Trace(err, query, id)
 	}
 }
 
@@ -110,7 +110,7 @@ func (engine *Engine) DeleteHumanByID(id int) {
 	query := `delete from "Human" where "HumanID"=:1`
 	_, err := engine.db.Exec(query, id)
 	if err != nil {
-		log.Println(query, id, err)
+		Trace(query, id, err)
 	}
 }
 
@@ -119,7 +119,7 @@ func (engine *Engine) DeleteHumanByIdentity(identity string) {
 	query := `delete from "Human" where "Identity"=:1`
 	_, err := engine.db.Exec(query, identity)
 	if err != nil {
-		log.Println(query, identity, err)
+		Trace(err, query, identity)
 	}
 }
 

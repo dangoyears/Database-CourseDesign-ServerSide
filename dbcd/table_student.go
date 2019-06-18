@@ -79,6 +79,8 @@ func (engine *Engine) GetStudentsByClassID(classID int) []Student {
 }
 
 // UpdateStudent 更新指定学号studentNumber学生的信息。
+// 只能更新学生本身的属性，不能处理转专业等情形。
+// 如果需要转专业等，使用UpdateStudentAsInfo。
 func (engine *Engine) UpdateStudent(studentNumber int, info StudentInfo) {
 	query := `update "Student" set "AdmissionDate"=:1, "GraduationDate"=:2, "StudentDegree"=:3, "YearOfSchool"=:4, "Status"=:5 where "StudentNumber"=:6`
 	_, err := engine.db.Exec(query, info.AdmissionDate, info.GraduationDate, info.StudentDegree, info.YearOfSchool, info.Status, studentNumber)
@@ -98,15 +100,6 @@ func (engine *Engine) DeleteStudentByID(id int) {
 	engine.DeleteHumanByID(id)
 }
 
-// DeleteStudentsByClassID 删除指定ClassID的学生。
-func (engine *Engine) DeleteStudentsByClassID(classID int) {
-	students := engine.GetStudentsByClassID(classID)
-
-	for _, student := range students {
-		engine.DeleteStudentByStudentNubmer(student.StudentNumber)
-	}
-}
-
 // DeleteStudentByStudentNubmer 删除指定ID的学生。
 func (engine *Engine) DeleteStudentByStudentNubmer(studentNumber int) {
 	student := engine.GetStudentByStudentNubmer(studentNumber)
@@ -117,10 +110,19 @@ func (engine *Engine) DeleteStudentByStudentNubmer(studentNumber int) {
 	query := `delete from "Student" where "StudentNumber"=:1`
 	_, err := engine.db.Exec(query, studentNumber)
 	if err != nil {
-		log.Println(query, studentNumber, err)
+		Trace(err, query, studentNumber)
 	}
 
 	engine.DeleteHumanByID(student.HumanID)
+}
+
+// DeleteStudentsByClassID 删除指定ClassID的学生。
+func (engine *Engine) DeleteStudentsByClassID(classID int) {
+	students := engine.GetStudentsByClassID(classID)
+
+	for _, student := range students {
+		engine.DeleteStudentByStudentNubmer(student.StudentNumber)
+	}
 }
 
 // TestTableStudent 测试表Student。

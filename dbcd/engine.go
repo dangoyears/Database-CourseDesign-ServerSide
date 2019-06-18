@@ -64,6 +64,9 @@ func (engine *Engine) testDB() {
 	engine.TestTableSpecialty()
 	engine.TestTableStudent()
 	engine.TestTableTeacher()
+	engine.TestViewClassInfo()
+	engine.TestViewStudentInfo()
+	engine.TestViewTeacherInfo()
 	log.Println("All database tests have finished.")
 }
 

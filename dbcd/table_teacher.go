@@ -29,6 +29,22 @@ values (:1, :2, :3, :4, :5, :6)`
 	}
 }
 
+// UpdateTeacher 更新工号为teacherNumber的教师信息。
+func (engine *Engine) UpdateTeacher(teacherNumber int, human Human, collegeName string, graduationSchool, position, teacherDegree string) {
+	if !engine.ExistCollege(collegeName) {
+		engine.CreateCollege(collegeName)
+	}
+	collegeID := engine.GetCollegeByName(collegeName).CollegeID
+
+	teacher := engine.GetTeacherByTeacherNumber(teacherNumber)
+	engine.UpdateHumanByID(human, teacher.HumanID)
+
+	query := `update "Teacher" set "CollegeID"=:1, "GraduationSchool"=:2, "Position"=:3, "TeacherDegree"=:4 where "TeacherNumber"=:5`
+	if _, err := engine.db.Exec(query, collegeID, graduationSchool, position, teacherDegree, teacherNumber); err != nil {
+		Trace(query, err)
+	}
+}
+
 // ExistTeacher 返回指定teachernNumber的教师是否存在。
 func (engine *Engine) ExistTeacher(teacherNumber int) bool {
 	return engine.GetTeacherByTeacherNumber(teacherNumber) != nil
@@ -56,7 +72,7 @@ func (engine *Engine) DeleteTeacherByTeacherNumber(teacherNumber int) {
 	queryDeleteTeacher := `delete from "Teacher" where "TeacherNumber"=:1`
 	_, err := engine.db.Exec(queryDeleteTeacher, teacherNumber)
 	if err != nil {
-		log.Println(queryDeleteTeacher, teacherNumber, err)
+		Trace(err, queryDeleteTeacher, teacherNumber)
 	}
 
 	engine.DeleteHumanByID(teacher.HumanID)

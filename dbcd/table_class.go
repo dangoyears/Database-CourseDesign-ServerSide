@@ -117,4 +117,7 @@ func (engine *Engine) TestTableClass() {
 	if engine.ExistClass(testCollegeName, testCollegeName, testGrade, testClassCode) {
 		log.Panicln("Table Class test failed: testClass should NOT exist.")
 	}
+
+	// 清理测试环境。
+	engine.DeleteCollegeByName(testCollegeName)
 }

@@ -66,6 +66,7 @@ func (engine *Engine) DeleteTeacherByTeacherNumber(teacherNumber int) {
 func (engine *Engine) TestTableTeacher() {
 	log.Println("Testing table Teacher.")
 
+	// 准备测试环境。
 	const (
 		testName             = "（测试名称）"
 		testIdentity         = "123456789012345678"
@@ -78,17 +79,22 @@ func (engine *Engine) TestTableTeacher() {
 	)
 	engine.DeleteTeacherByTeacherNumber(testTeacherNumber)
 
+	// 测试CREATE。
 	var human = Human{
 		Name:     testName,
 		Identity: testIdentity,
 	}
-
 	engine.CreateTeacher(human, testCollegeName, testTeacherNumber, testGraduationSchool, testPosition, testTeacherDegree)
 	if !engine.ExistTeacher(testTeacherNumber) {
 		log.Panicln("Table Teacher test failed: teacher should exist.")
 	}
+
+	// 测试DELETE。
 	engine.DeleteTeacherByTeacherNumber(testTeacherNumber)
 	if engine.ExistTeacher(testTeacherNumber) {
 		log.Panicln("Table Teacher test failed: teacher should NOT exist.")
 	}
+
+	// 清理测试环境。
+	engine.DeleteCollegeByName(testCollegeName)
 }

@@ -12,7 +12,7 @@ func (engine *Engine) GetWelcomeEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		response.SetCodeAndMsg(0, `欢迎使用DBCD后端接口。\(@^0^@)/`)
 		response["doc"] = "https://github.com/dangoyears/Database-CourseDesign-Docs"
-		response["ver"] = "0.0.2"
+		response["ver"] = "0.0.3"
 		c.JSON(http.StatusOK, response)
 	}
 }

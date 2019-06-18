@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 11g                           */
-/* Created on:     2019/6/16 10:05:02                           */
+/* Created on:     2019/6/18 19:42:34                           */
 /*==============================================================*/
 
 
@@ -650,81 +650,97 @@ create index "TeacherTeachsCourse2_FK" on "TeacherTeachsCourse" (
 alter table "Class"
    add constraint FK_CLASS_CLASSBELO_SPECIALT foreign key ("SpecialtyID")
       references "Specialty" ("SpecialtyID")
+      on delete cascade
 /
 
 alter table "Class"
    add constraint FK_CLASS_TEACHERMA_TEACHER foreign key ("MasterTeacherHumanID")
       references "Teacher" ("HumanID")
+      on delete cascade
 /
 
 alter table "Course"
    add constraint FK_COURSE_COURSEOPE_SEMESTER foreign key ("SmesterID")
       references "Semester" ("SmesterID")
+      on delete cascade
 /
 
 alter table "Course"
    add constraint FK_COURSE_LEADINGTE_TEACHER foreign key ("LeadTeacherHumanID")
       references "Teacher" ("HumanID")
+      on delete cascade
 /
 
 alter table "CourseProgram"
    add constraint FK_COURSEPR_COURSEHAS_COURSE foreign key ("CourseID")
       references "Course" ("CourseID")
+      on delete cascade
 /
 
 alter table "CourseProgram"
    add constraint FK_COURSEPR_COURSETAK_CLASSROO foreign key ("ClassroomID")
       references "Classroom" ("ClassroomID")
+      on delete cascade
 /
 
 alter table "Semester"
    add constraint FK_SEMESTER_ACADEMICY_ACADEMIC foreign key ("AcademicYear")
       references "AcademicYear" ("AcademicYear")
+      on delete cascade
 /
 
 alter table "Specialty"
    add constraint FK_SPECIALT_SPECIALTY_COLLEGE foreign key ("CollegeID")
       references "College" ("CollegeID")
+      on delete cascade
 /
 
 alter table "Student"
    add constraint FK_STUDENT_HUMANINHE_HUMAN foreign key ("HumanID")
       references "Human" ("HumanID")
+      on delete cascade
 /
 
 alter table "Student"
    add constraint FK_STUDENT_STUDENTBE_CLASS foreign key ("ClassID")
       references "Class" ("ClassID")
+      on delete cascade
 /
 
 alter table "StudentAttendsCourse"
    add constraint FK_STUDENTA_STUDENTAT_COURSE foreign key ("CourseID")
       references "Course" ("CourseID")
+      on delete cascade
 /
 
 alter table "StudentAttendsCourse"
    add constraint FK_STUDENTA_STUDENTAT_STUDENT foreign key ("StudentHumanID")
       references "Student" ("HumanID")
+      on delete cascade
 /
 
 alter table "Teacher"
    add constraint FK_TEACHER_HUMANINHE_HUMAN foreign key ("HumanID")
       references "Human" ("HumanID")
+      on delete cascade
 /
 
 alter table "Teacher"
    add constraint FK_TEACHER_TEACHERBE_COLLEGE foreign key ("CollegeID")
       references "College" ("CollegeID")
+      on delete cascade
 /
 
 alter table "TeacherTeachsCourse"
    add constraint FK_TEACHERT_TEACHERTE_TEACHER foreign key ("TeacherHumanID")
       references "Teacher" ("HumanID")
+      on delete cascade
 /
 
 alter table "TeacherTeachsCourse"
    add constraint FK_TEACHERT_TEACHERTE_COURSE foreign key ("CourseID")
       references "Course" ("CourseID")
+      on delete cascade
 /
 
 

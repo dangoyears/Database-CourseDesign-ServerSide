@@ -19,6 +19,8 @@ func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 		var response = NewRouterResponse()
 		var param loginEndpointParam
 
+		Trace(c.GetString("try"))
+
 		if BindContextIntoStruct(c, &param) == nil {
 			name, pass := param.Username, param.Password
 			var token string

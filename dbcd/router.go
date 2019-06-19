@@ -13,8 +13,10 @@ import (
 func BindContextIntoStruct(c *gin.Context, obj interface{}) *error {
 	var err1, err2 error
 	if err1 = c.ShouldBindWith(obj, binding.Query); err1 == nil {
+		Trace(obj)
 		return nil
 	} else if err2 = c.ShouldBindBodyWith(obj, binding.JSON); err2 == nil {
+		Trace(obj)
 		return nil
 	}
 	var err = errors.New(strings.Join([]string{err1.Error(), err2.Error()}, " "))
@@ -37,6 +39,10 @@ func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.Handler
 	}
 
 	return func(c *gin.Context) {
+
+		// 尝试先解析所有的json，存放到context中，最后在进行解析。
+		c.Set("try", "catch")
+
 		if len(grantedRoles) == 0 { // 公开API
 			return // 允许任何人访问，将控制权交给下一个路由。
 		}

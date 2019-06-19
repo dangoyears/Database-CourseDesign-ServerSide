@@ -1,6 +1,9 @@
 # 用户个人配置
 .vscode
 
+# 编译相关二进制文件
+*.pyc
+
 # 敏感信息
 config*.yaml
 !config.example.yaml

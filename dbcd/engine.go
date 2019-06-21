@@ -91,6 +91,8 @@ func (engine *Engine) establishRouter() {
 
 	engine.BindRoute("/", []string{}, engine.GetWelcomeEndpoint())
 	engine.BindRoute("/welcome", []string{}, engine.GetWelcomeEndpoint())
+	engine.BindRoute("/echo", []string{"admin"}, engine.getEchoRoute())
+
 	engine.BindRoute("/login", []string{}, engine.GetLoginEndpoint())
 	engine.BindRoute("/logout", []string{}, engine.GetLogoutEndpoint())
 	engine.BindRoute("/role", []string{}, engine.GetRoleEndpoint())

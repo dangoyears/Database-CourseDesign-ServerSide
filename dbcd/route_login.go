@@ -1,6 +1,7 @@
 package dbcd
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,22 +11,25 @@ import (
 func (engine *Engine) GetLoginEndpoint() gin.HandlerFunc {
 
 	type loginEndpointParam struct {
-		Type     string `form:"type" binding:"required"` // {"anonymous", "admin", "student", "teacher"}之一
+		Type     string `form:"type" binding:"required"`
 		Username string `form:"user" binding:"required"`
 		Password string `form:"pass" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
 		var response = NewRouterResponse()
-		var param loginEndpointParam
+		param := GetArgs(c)
 
-		Trace(c.GetString("try"))
+		name, nameOk := param["user"].(string)
+		pass, passOK := param["pass"].(string)
+		usertype, typeOK := param["type"].(string)
 
-		if BindContextIntoStruct(c, &param) == nil {
-			name, pass := param.Username, param.Password
+		log.Println(name, pass, usertype)
+
+		if nameOk && passOK && typeOK && name != "" && pass != "" {
 			var token string
 
-			switch param.Type {
+			switch usertype { // {"anonymous", "admin", "student", "teacher"}之一
 			case "admin":
 				token = engine.LoginAdmin(name, pass)
 			case "student":

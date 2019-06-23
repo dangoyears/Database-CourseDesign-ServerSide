@@ -13,6 +13,10 @@ type Class struct {
 
 // CreateClass 根据专业名specialty、届别grade和班别code来创建班级。
 func (engine *Engine) CreateClass(collegeName, specialtyName string, grade, code int) {
+	if engine.ExistClass(collegeName, specialtyName, grade, code) {
+		return
+	}
+
 	if !engine.ExistSpecialty(specialtyName) {
 		engine.CreateSpecialty(collegeName, specialtyName)
 	}

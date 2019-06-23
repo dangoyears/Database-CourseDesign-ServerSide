@@ -21,7 +21,6 @@ func saveRequestBody(c *gin.Context) {
 		log.Panicln(err)
 	}
 	c.Set("request-body", body)
-	log.Println("Finish setting up body.")
 }
 
 func resumeRequestBody(c *gin.Context) {

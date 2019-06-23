@@ -2,6 +2,7 @@ package dbcd
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,21 +18,27 @@ func (engine *Engine) GetWriteCollegeEndpoint() gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
-		param := GetArgs(c)
+		var param writeCollegeEndpointParam
 		var response = NewRouterResponse()
 
-		collegeName, collegeNameOk := param["college"]
-		specialtyName, specialtyNameOk := param["specialty"]
-		grade, gradeOk := param["grade"]
-		classCode, classCodeOk := param["class"]
+		resumeRequestBody(c)
+		if c.ShouldBind(&param) == nil {
+			collegeName, specialtyName := param.CollegeName, param.SpecialtyName
 
-		if collegeNameOk && specialtyNameOk && gradeOk && classCodeOk {
+			grade, err := strconv.Atoi(param.Grade)
+			if err != nil {
+				Trace(err)
+			}
 
-			engine.CreateClass(collegeName.(string), specialtyName.(string), grade.(int), classCode.(int))
+			classCode, err := strconv.Atoi(param.ClassCode)
+			if err != nil {
+				Trace(err)
+			}
+
+			engine.CreateClass(collegeName, specialtyName, grade, classCode)
 			response.SetCodeAndMsg(0, "成功创建班级。")
 			c.JSON(http.StatusOK, response)
 			return
-
 		}
 		response.SetCodeAndMsg(-1, "参数不足。必须提供非空的college、specialty、grade和class参数。")
 		c.JSON(http.StatusOK, response)

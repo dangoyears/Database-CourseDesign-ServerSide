@@ -15,10 +15,12 @@ func (engine *Engine) GetDeleteBothEndpoint() gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
+		resumeRequestBody(c)
+
 		var response = NewRouterResponse()
 		var param deleteBothEndpointParam
 
-		if BindContextIntoStruct(c, &param) == nil {
+		if c.ShouldBind(&param) == nil {
 			switch param.Role {
 			case "teacher":
 				engine.DeleteTeacherByTeacherNumber(param.TeacherOrStudentNumber)

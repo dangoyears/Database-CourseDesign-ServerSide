@@ -2,6 +2,7 @@ package dbcd
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,20 +11,33 @@ import (
 func (engine *Engine) GetDeleteClassEndpoint() gin.HandlerFunc {
 
 	type deleteClassEndpointParam struct {
-		CollegeName   string `form:"college"`
-		SpecialtyName string `form:"specialty" binding:"required"`
-		Grade         int    `form:"grade" binding:"required"`
-		ClassCode     int    `form:"class" binding:"required"`
+		CollegeName   string `json:"college" form:"college"`
+		SpecialtyName string `json:"specialty" form:"specialty" binding:"required"`
+		Grade         string `json:"grade" form:"grade" binding:"required"`
+		ClassCode     string `json:"class" form:"class" binding:"required"`
+		Sum           string `json:"sum" form:"sum"`
 	}
 
 	return func(c *gin.Context) {
+		resumeRequestBody(c)
+
 		var response = NewRouterResponse()
 		var param deleteClassEndpointParam
 
-		if BindContextIntoStruct(c, &param) == nil {
-			engine.DeleteClassBySpecialtyNameGradeAndCode(param.SpecialtyName, param.Grade, param.ClassCode)
+		if c.ShouldBind(&param) == nil {
+			specialtyName := param.SpecialtyName
+			grade, gradeOK := strconv.Atoi(param.Grade)
+			classCode, classCodeOK := strconv.Atoi(param.ClassCode)
 
-			response.SetCodeAndMsg(0, "如无意外，指定的班级将被删除。")
+			if gradeOK != nil || classCodeOK != nil {
+				response.SetCodeAndMsg(0, "grade参数或class参数不是有效的形式。")
+				c.JSON(http.StatusOK, response)
+				return
+			}
+
+			engine.DeleteClassBySpecialtyNameGradeAndCode(specialtyName, grade, classCode)
+
+			response.SetCodeAndMsg(0, "如无意外，指定的班级"+specialtyName+strconv.Itoa(grade)+strconv.Itoa(classCode)+"将被删除。sum参数已被忽略。")
 			c.JSON(http.StatusOK, response)
 			return
 		}

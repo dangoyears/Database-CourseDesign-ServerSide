@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,6 +13,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 )
+
+func saveRequestBody(c *gin.Context) {
+	body, err := ioutil.ReadAll(c.Request.Body)
+
+	if err != nil {
+		log.Panicln(err)
+	}
+	c.Set("request-body", body)
+	log.Println("Finish setting up body.")
+}
+
+func resumeRequestBody(c *gin.Context) {
+	body, exists := c.Get("request-body")
+
+	if !exists {
+		log.Panicln("Request body should exist. Call saveRequestBody() before resumRequestBody().")
+	}
+	bodyBytes := body.([]byte)
+
+	c.Request.Body = ioutil.NopCloser(bytes.NewReader(bodyBytes))
+}
 
 // BindContextIntoStruct 尝试将Context与Struct绑定。
 func BindContextIntoStruct(c *gin.Context, obj interface{}) *error {
@@ -42,8 +64,8 @@ func GetArgs(c *gin.Context) map[string]interface{} {
 // grantedRole 指定有哪些角色可以访问路由，留空则允许任何角色访问。
 // route 指定路由。
 func (engine *Engine) BindRoute(path string, grantedRoles []string, route func(*gin.Context)) {
-	engine.router.GET(path, engine.getArgsParseRoute(), engine.getPermissionCheckRoute(grantedRoles), route)
-	engine.router.POST(path, engine.getArgsParseRoute(), engine.getPermissionCheckRoute(grantedRoles), route)
+	engine.router.GET(path, engine.getPermissionCheckRoute(grantedRoles), route)
+	engine.router.POST(path, engine.getPermissionCheckRoute(grantedRoles), route)
 }
 
 // getJSONParseRoute 返回一个参数绑定路由，这个路由从查询字符串和JSON格式的请求主体中获取网页参数，
@@ -81,18 +103,22 @@ func (engine *Engine) getArgsParseRoute() gin.HandlerFunc {
 
 // getPermissionCheckRoute 检查一个API请求是否符合访问权限管理的要求。
 func (engine *Engine) getPermissionCheckRoute(grantedRoles []string) gin.HandlerFunc {
+	type permissionParam struct {
+		Token string `json:"token" form:"token" binding:"required"`
+	}
+
 	return func(c *gin.Context) {
+		saveRequestBody(c)
+		resumeRequestBody(c)
+
 		if len(grantedRoles) == 0 { // 公开API
 			return // 允许任何人访问，将控制权交给下一个路由。
 		}
 
-		param := GetArgs(c)
+		var param permissionParam
+		if c.ShouldBind(&param) == nil {
 
-		token, tokenOK := param["token"].(string)
-
-		if tokenOK {
-
-			comeInRole := engine.keeper.GetRole(token)
+			comeInRole := engine.keeper.GetRole(param.Token)
 			for _, grantedRole := range grantedRoles {
 				if comeInRole == grantedRole {
 					c.Next()

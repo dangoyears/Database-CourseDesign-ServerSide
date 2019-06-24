@@ -2,6 +2,7 @@ package dbcd
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,8 +11,8 @@ import (
 func (engine *Engine) GetDeleteBothEndpoint() gin.HandlerFunc {
 
 	type deleteBothEndpointParam struct {
-		Role                   string `form:"type" binding:"required"`
-		TeacherOrStudentNumber int    `form:"id" binding:"required"`
+		Role                   string `json:"type" form:"type" binding:"required"`
+		TeacherOrStudentNumber string `json:"id" form:"id" binding:"required"`
 	}
 
 	return func(c *gin.Context) {
@@ -21,19 +22,25 @@ func (engine *Engine) GetDeleteBothEndpoint() gin.HandlerFunc {
 		var param deleteBothEndpointParam
 
 		if c.ShouldBind(&param) == nil {
-			switch param.Role {
-			case "teacher":
-				engine.DeleteTeacherByTeacherNumber(param.TeacherOrStudentNumber)
-			case "student":
-				engine.DeleteStudentByStudentNubmer(param.TeacherOrStudentNumber)
-			default:
-				response.SetCodeAndMsg(1, "不合理的type："+param.Role)
+			teacherOrStudentNumber, teacherOrStudentNumberErr := strconv.Atoi(param.TeacherOrStudentNumber)
+			if teacherOrStudentNumberErr != nil {
+				response.SetCodeAndMsg(1, "id必须可转换为数字。")
+
 				c.JSON(http.StatusOK, response)
-				c.Abort()
 				return
 			}
 
-			response.SetCodeAndMsg(0, "如无意外，指定的教师/学生将被删除。")
+			switch param.Role {
+			case "teacher":
+				engine.DeleteTeacherByTeacherNumber(teacherOrStudentNumber)
+				response.SetCodeAndMsg(0, "如无意外，指定的教师将被删除。")
+			case "student":
+				engine.DeleteStudentByStudentNubmer(teacherOrStudentNumber)
+				response.SetCodeAndMsg(0, "如无意外，指定的学生将被删除。")
+			default:
+				response.SetCodeAndMsg(1, "不合理的type："+param.Role)
+			}
+
 			c.JSON(http.StatusOK, response)
 			return
 		}

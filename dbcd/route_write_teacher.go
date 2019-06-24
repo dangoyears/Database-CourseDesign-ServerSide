@@ -80,11 +80,13 @@ func (engine *Engine) GetWriteTeacherEndpoint() gin.HandlerFunc {
 
 			if teacher := engine.GetTeacherByTeacherNumber(teacherNumber); teacher != nil {
 				engine.UpdateTeacherAsInfo(teacherNumber, teacherInfo)
+				response.SetCodeAndMsg(0, "教师被将更新。由于提供了birthday参数，age参数已被忽略。")
+				c.JSON(http.StatusOK, response)
 				return
 			}
 
 			engine.CreateTeacherAsInfo(teacherInfo)
-			response.SetCodeAndMsg(0, "教师将被创建或更新。由于提供了birthday参数，age参数已被忽略。")
+			response.SetCodeAndMsg(0, "教师将被创建。由于提供了birthday参数，age参数已被忽略。")
 			c.JSON(http.StatusOK, response)
 			return
 		}

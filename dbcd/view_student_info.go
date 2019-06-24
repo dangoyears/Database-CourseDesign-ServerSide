@@ -92,7 +92,7 @@ where "StudentNumber"=:1`
 		&info.CollegeName, &info.SpecialtyName, &info.Grade, &info.ClassCode,
 		&info.Name, &info.Sex, &info.Birthday, &info.Identity, &info.Notes, &info.PasswordHash,
 		&info.StudentNumber, &info.AdmissionDate, &info.GraduationDate, &info.StudentDegree, &info.YearOfSchool, &info.Status); err != nil {
-		Trace(err, query)
+		Trace(err, query, id)
 		return nil
 	}
 	return &info

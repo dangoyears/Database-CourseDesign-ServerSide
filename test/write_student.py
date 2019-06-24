@@ -13,7 +13,7 @@ data = {
         "sex": "女",
         "birthday": "1970-3-23",
         "age": "21",
-        "idCard": "440582199708310612",
+        "idCard": "440582199708310610",
         "password": "whoami",
         "yearSystem": "4"
     }

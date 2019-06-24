@@ -36,6 +36,50 @@ func (engine *Engine) CreateTeacherAsInfo(info TeacherInfo) {
 	engine.CreateTeacher(human, info.CollegeName, info.TeacherNumber, info.GraduationSchool, info.Position, info.TeacherDegree)
 }
 
+// GetTeacherInfo 返回教师信息。
+func (engine *Engine) GetTeacherInfo() []TeacherInfo {
+	query := `select "HumanID", "CollegeID", "CollegeName", "Name", "Sex", "Birthday", "Identity", "Notes", "PasswordHash", 
+"TeacherNumber", "GraduationSchool", "Position", "TeacherDegree" from "TeacherInfo"`
+	rows, err := engine.db.Query(query)
+	if err != nil {
+		log.Println(query, err)
+	}
+	defer rows.Close()
+
+	var teacherInfo []TeacherInfo
+	for rows.Next() {
+		var info TeacherInfo
+		if err := rows.Scan(
+			&info.HumanID, &info.CollegeID,
+			&info.CollegeName, &info.Name, &info.Sex, &info.Birthday, &info.Identity, &info.Notes, &info.PasswordHash,
+			&info.TeacherNumber, &info.GraduationSchool, &info.Position, &info.TeacherDegree); err != nil {
+
+			Trace(query, err)
+		}
+		teacherInfo = append(teacherInfo, info)
+	}
+
+	return teacherInfo
+}
+
+// GetTeacherInfoByTeacherNumber 返回对应学号的教师信息。
+func (engine *Engine) GetTeacherInfoByTeacherNumber(teacherNumber int) *TeacherInfo {
+	query := `select "HumanID", "CollegeID", "CollegeName", "Name", "Sex", "Birthday", "Identity", "Notes", "PasswordHash", 
+"TeacherNumber", "GraduationSchool", "Position", "TeacherDegree" from "TeacherInfo" where "TeacherNumber"=:1`
+	row := engine.db.QueryRow(query, teacherNumber)
+
+	var info TeacherInfo
+	if err := row.Scan(&info.HumanID, &info.CollegeID,
+		&info.CollegeName, &info.Name, &info.Sex, &info.Birthday, &info.Identity, &info.Notes, &info.PasswordHash,
+		&info.TeacherNumber, &info.GraduationSchool, &info.Position, &info.TeacherDegree); err != nil {
+
+		Trace(query, err)
+		return nil
+	}
+
+	return &info
+}
+
 // UpdateTeacherAsInfo 更新指定教师的信息。
 // 可以处理教师转院等情况。
 // 禁止修改教师工号。
@@ -50,27 +94,6 @@ func (engine *Engine) UpdateTeacherAsInfo(teacherNumber int, info TeacherInfo) {
 	}
 
 	engine.UpdateTeacher(teacherNumber, human, info.CollegeName, info.GraduationSchool, info.Position, info.TeacherDegree)
-}
-
-// GetTeacherInfo 返回教师信息。
-func (engine *Engine) GetTeacherInfo() []TeacherInfo {
-	query := `select "TeacherNumber", "CollegeName", "Name", "Sex", "Birthday", "Identity" from "TeacherInfo"`
-	rows, err := engine.db.Query(query)
-	if err != nil {
-		log.Println(query, err)
-	}
-	defer rows.Close()
-
-	var teacherInfo []TeacherInfo
-	for rows.Next() {
-		var info TeacherInfo
-		if err := rows.Scan(&info.TeacherNumber, &info.CollegeName, &info.Name, &info.Sex, &info.Birthday, &info.Identity); err != nil {
-			log.Println(query, err)
-		}
-		teacherInfo = append(teacherInfo, info)
-	}
-
-	return teacherInfo
 }
 
 // TestViewTeacherInfo 测试TeacherInfo视图。

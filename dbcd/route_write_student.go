@@ -121,7 +121,7 @@ func (engine *Engine) GetWriteStudentEndpoint() gin.HandlerFunc {
 			}
 
 			engine.CreateStudentAsInfo(studentInfo)
-			response.SetCodeAndMsg(0, "学生将被创建或更新。由于提供了birthday参数，age参数已被忽略。")
+			response.SetCodeAndMsg(0, "学生将被创建。由于提供了birthday参数，age参数已被忽略。")
 			c.JSON(http.StatusOK, response)
 			return
 		}

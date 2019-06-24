@@ -56,7 +56,6 @@ func (engine *Engine) establishDB() {
 // testDB 测试数据库功能，包括测试数据库能否正常写入等。
 func (engine *Engine) testDB() {
 	log.Println("Database tests began.")
-	engine.TestTableAcademicYear()
 	engine.TestTableAdministrator()
 	engine.TestTableClass()
 	engine.TestTableCollege()

@@ -80,6 +80,24 @@ func (engine *Engine) GetTeacherInfoByTeacherNumber(teacherNumber int) *TeacherI
 	return &info
 }
 
+// GetTeacherInfoByTeacherName 返回指定teacherName的教师。这里假设教师没有重名的情况。
+func (engine *Engine) GetTeacherInfoByTeacherName(teacherName string) *TeacherInfo {
+	query := `select "HumanID", "CollegeID", "CollegeName", "Name", "Sex", "Birthday", "Identity", "Notes", "PasswordHash", 
+"TeacherNumber", "GraduationSchool", "Position", "TeacherDegree" from "TeacherInfo" where "Name"=:1`
+	row := engine.db.QueryRow(query, teacherName)
+
+	var info TeacherInfo
+	if err := row.Scan(&info.HumanID, &info.CollegeID,
+		&info.CollegeName, &info.Name, &info.Sex, &info.Birthday, &info.Identity, &info.Notes, &info.PasswordHash,
+		&info.TeacherNumber, &info.GraduationSchool, &info.Position, &info.TeacherDegree); err != nil {
+
+		Trace(query, err)
+		return nil
+	}
+
+	return &info
+}
+
 // UpdateTeacherAsInfo 更新指定教师的信息。
 // 可以处理教师转院等情况。
 // 禁止修改教师工号。

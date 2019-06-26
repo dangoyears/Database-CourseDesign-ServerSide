@@ -3,8 +3,8 @@ from public import URL, POST_DATA as data
 
 data = {
     **data, **{
-        "college": "路由测试学院",
-        "specialty": "路由测试专业",
+        "college": "计算机科学与网络学院",
+        "specialty": "软件工程",
         "grade": "17",
         "class": "1",
     }

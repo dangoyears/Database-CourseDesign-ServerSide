@@ -114,6 +114,59 @@ func (engine *Engine) GetCourseByTeacherNumber(teacherNumber int) []Course {
 	return courses
 }
 
+// GetCourseByStudentNumber 获取编号为studentNumber的学生参与学习的课程。
+func (engine *Engine) GetCourseByStudentNumber(studentNumber int) []Course {
+	student := engine.GetStudentByStudentNubmer(studentNumber)
+
+	if student == nil {
+		Trace("不存在编号为" + strconv.Itoa(studentNumber) + "的学生。")
+		return []Course{}
+	}
+	studentHumanID := student.HumanID
+
+	queryCourseID := `select "CourseID" from "StudentAttendsCourse" where "StudentHumanID"=:1`
+	rowsID, err := engine.db.Query(queryCourseID, studentHumanID)
+	if err != nil {
+		Trace(err, queryCourseID)
+		return []Course{}
+	}
+	defer rowsID.Close()
+
+	courses := []Course{}
+	for rowsID.Next() {
+		var courseID int
+		if err := rowsID.Scan(&courseID); err != nil {
+			Trace(err, queryCourseID, courseID)
+		}
+
+		var course Course
+		query := `select "CourseID", "LeadTeacherHumanID", "CourseName", "CourseNumber", "Credits", "CourseProperty", "Accommodate", "Time", "Address", "RestrictClass" 
+	from "Course" where "CourseID"=:1`
+		row := engine.db.QueryRow(query, courseID)
+
+		if err := row.Scan(&course.CourseID, &course.LeadTeacherHumanID, &course.CourseName, &course.CourseNumber,
+			&course.Credits, &course.CourseProperty, &course.Accommodate, &course.Time, &course.Address, &course.RestrictClass); err != nil {
+			Trace(err, query)
+		}
+		courses = append(courses, course)
+	}
+
+	return courses
+}
+
+// GetStudentCourseScore 获取学生对应课程的信息。
+func (engine *Engine) GetStudentCourseScore(studentHumanID, courseID int) *int {
+	query := `select "Score" from "StudentAttendsCourse" where "StudentHumanID"=:1`
+	row := engine.db.QueryRow(query, studentHumanID)
+
+	var score *int
+	if err := row.Scan(&score); err != nil {
+		Trace(err, query)
+		return nil
+	}
+	return score
+}
+
 // GetTeacherHumanIDsByCourseID 获取courseID课程参与教师的自然人编号。
 func (engine *Engine) GetTeacherHumanIDsByCourseID(courseID int) []int {
 	query := `select "TeacherHumanID" from "TeacherTeachsCourse" where "CourseID"=:1`

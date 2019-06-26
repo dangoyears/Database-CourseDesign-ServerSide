@@ -39,7 +39,7 @@ func (engine *Engine) GetReadTeacherEndpoint() gin.HandlerFunc {
 
 				courseInfo["name"] = course.CourseName
 				courseInfo["id"] = fmt.Sprintf("%010d", course.CourseNumber)
-				courseInfo["credit"] = course.Credits
+				courseInfo["credit"] = strconv.Itoa(course.Credits)
 				switch course.CourseProperty {
 				case 1:
 					courseInfo["nature"] = "专业必修课"

@@ -47,7 +47,7 @@ data = {
         "sex": "男",
         "education": "硕士",
         "graduation": "南开大学",
-        "birthday": "2000-1-1",
+        "birthday": "2018-3-14",
         "age": "34",
         "idCard": "440582199708310609",
         "password": "310612",

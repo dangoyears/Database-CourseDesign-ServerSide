@@ -48,6 +48,19 @@ func (engine *Engine) GetCourse() []Course {
 	return courses
 }
 
+// GetCourseSelectionSumByCourseNumber 获取CourseNumber的选课人数。
+func (engine *Engine) GetCourseSelectionSumByCourseNumber(courseNumber int) int {
+	query := `select count(*) from "Course" where "CourseNumber"=:1`
+	row := engine.db.QueryRow(query, courseNumber)
+
+	var count int
+	if err := row.Scan(&count); err != nil {
+		Trace(err, query)
+		return 0
+	}
+	return count
+}
+
 // GetCourseByCourseNumber 获取指定courseNumber的课程。
 func (engine *Engine) GetCourseByCourseNumber(courseNumber int) *Course {
 	query := `select "CourseID", "LeadTeacherHumanID", "CourseName", "CourseNumber", "Credits", "CourseProperty", "Accommodate", "Time", "Address", "RestrictClass" 
@@ -60,6 +73,66 @@ from "Course" where "CourseNumber"=:1`
 		return nil
 	}
 	return &course
+}
+
+// GetCourseByTeacherNumber 获取编号为teacherNumber的教师参与教学的课程。
+func (engine *Engine) GetCourseByTeacherNumber(teacherNumber int) []Course {
+	teacher := engine.GetTeacherByTeacherNumber(teacherNumber)
+
+	if teacher == nil {
+		return []Course{}
+	}
+	teacherHumanID := teacher.HumanID
+
+	queryCourseID := `select "CourseID" from "TeacherTeachsCourse" where "TeacherHumanID"=:1`
+	rowsID, err := engine.db.Query(queryCourseID, teacherHumanID)
+	if err != nil {
+		Trace(err, queryCourseID)
+		return []Course{}
+	}
+	defer rowsID.Close()
+
+	courses := []Course{}
+	for rowsID.Next() {
+		var courseID int
+		if err := rowsID.Scan(&courseID); err != nil {
+			Trace(err, queryCourseID, courseID)
+		}
+
+		var course Course
+		query := `select "CourseID", "LeadTeacherHumanID", "CourseName", "CourseNumber", "Credits", "CourseProperty", "Accommodate", "Time", "Address", "RestrictClass" 
+	from "Course" where "CourseID"=:1`
+		row := engine.db.QueryRow(query, courseID)
+
+		if err := row.Scan(&course.CourseID, &course.LeadTeacherHumanID, &course.CourseName, &course.CourseNumber,
+			&course.Credits, &course.CourseProperty, &course.Accommodate, &course.Time, &course.Address, &course.RestrictClass); err != nil {
+			Trace(err, query)
+		}
+		courses = append(courses, course)
+	}
+
+	return courses
+}
+
+// GetTeacherHumanIDsByCourseID 获取courseID课程参与教师的自然人编号。
+func (engine *Engine) GetTeacherHumanIDsByCourseID(courseID int) []int {
+	query := `select "TeacherHumanID" from "TeacherTeachsCourse" where "CourseID"=:1`
+	rows, err := engine.db.Query(query, courseID)
+	if err != nil {
+		Trace(err, query)
+	}
+	defer rows.Close()
+
+	teacherHumanIDs := []int{}
+	for rows.Next() {
+		var teacherHumanID int
+		if err := rows.Scan(&teacherHumanID); err != nil {
+			Trace(err, query)
+		}
+		teacherHumanIDs = append(teacherHumanIDs, teacherHumanID)
+	}
+
+	return teacherHumanIDs
 }
 
 // UpdateCourseByCourseName 按照指定的信息创建课程。

@@ -26,6 +26,8 @@ func (engine *Engine) GetReadStudentEndpoint() gin.HandlerFunc {
 			studentInfo["grade"] = strconv.Itoa(student.Grade)
 			studentInfo["class"] = strconv.Itoa(student.ClassCode)
 			studentInfo["name"] = student.Name
+			studentInfo["sex"] = student.Sex
+			studentInfo["yearSystem"] = strconv.Itoa(student.YearOfSchool)
 			studentInfo["studentId"] = fmt.Sprintf("%010d", student.StudentNumber)
 
 			studentInfo["status"] = student.Status

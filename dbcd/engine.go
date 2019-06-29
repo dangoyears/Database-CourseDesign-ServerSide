@@ -103,6 +103,9 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/read/teacher", []string{"admin"}, engine.GetReadTeacherEndpoint())
 	engine.BindRoute("/read/course", []string{"admin"}, engine.GetReadCourseEndpoint())
 
+	engine.BindRoute("/read/teacher/one", []string{"admin", "teacher"}, engine.GetReadTeacherOneEndpoint())
+	engine.BindRoute("/read/student/one", []string{"admin", "student"}, engine.GetReadStudentOneEndpoint())
+
 	engine.BindRoute("/write/college", []string{"admin"}, engine.GetWriteCollegeEndpoint())
 	engine.BindRoute("/write/teacher", []string{"admin"}, engine.GetWriteTeacherEndpoint())
 	engine.BindRoute("/write/student", []string{"admin"}, engine.GetWriteStudentEndpoint())

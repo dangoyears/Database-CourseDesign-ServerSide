@@ -73,8 +73,9 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 				c.JSON(http.StatusOK, response)
 				return
 			}
-			teacherNames := strings.Split(param.Teachers[1:len(param.Teachers)-1], ", ")
+			teacherNames := strings.Split(param.Teachers[1:len(param.Teachers)-1], ",")
 			for i, str := range teacherNames {
+				teacherNames[i] = strings.TrimSpace(teacherNames[i])
 				teacherNames[i] = str[1 : len(str)-1]
 			}
 
@@ -83,8 +84,9 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 
 				engine.RemoveAllTeacher(courseNumber)
 				oldCourse := engine.GetCourseByCourseNumber(courseNumber)
-				classesToBeDeleted := strings.Split(oldCourse.RestrictClass[1:len(oldCourse.RestrictClass)-1], ", ")
+				classesToBeDeleted := strings.Split(oldCourse.RestrictClass[1:len(oldCourse.RestrictClass)-1], ",")
 				for i, class := range classesToBeDeleted {
+					class = strings.TrimSpace(class)
 					if len(class) <= 2 {
 						continue
 					}
@@ -114,8 +116,9 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 					engine.UpdateCourseLeadTeacherID(courseNumber, &leadTeacher.HumanID)
 					engine.AddTeacherByCourseNumberAndTeacherHumanID(courseNumber, leadTeacher.HumanID)
 				}
-				classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ", ")
+				classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ",")
 				for i, class := range classes {
+					class = strings.TrimSpace(class)
 					if len(class) <= 2 {
 						continue
 					}
@@ -149,8 +152,9 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 				engine.UpdateCourseLeadTeacherID(courseNumber, &leadTeacher.HumanID)
 				engine.AddTeacherByCourseNumberAndTeacherHumanID(courseNumber, leadTeacher.HumanID)
 			}
-			classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ", ")
+			classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ",")
 			for i, class := range classes {
+				class = strings.TrimSpace(class)
 				if len(class) <= 2 {
 					continue
 				}

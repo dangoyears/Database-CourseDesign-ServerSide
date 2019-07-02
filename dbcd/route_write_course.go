@@ -85,6 +85,10 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 				oldCourse := engine.GetCourseByCourseNumber(courseNumber)
 				classesToBeDeleted := strings.Split(oldCourse.RestrictClass[1:len(oldCourse.RestrictClass)-1], ", ")
 				for i, class := range classesToBeDeleted {
+					if len(class) <= 2 {
+						continue
+					}
+
 					classesToBeDeleted[i] = class[1 : len(class)-1]
 					group := strings.Split(classesToBeDeleted[i], "-")
 
@@ -112,6 +116,10 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 				}
 				classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ", ")
 				for i, class := range classes {
+					if len(class) <= 2 {
+						continue
+					}
+
 					classes[i] = class[1 : len(class)-1]
 					group := strings.Split(classes[i], "-")
 
@@ -143,6 +151,10 @@ func (engine *Engine) GetWriteCourseEndpoint() gin.HandlerFunc {
 			}
 			classes := strings.Split(param.RestrictClass[1:len(param.RestrictClass)-1], ", ")
 			for i, class := range classes {
+				if len(class) <= 2 {
+					continue
+				}
+
 				classes[i] = class[1 : len(class)-1]
 				group := strings.Split(classes[i], "-")
 

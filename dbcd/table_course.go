@@ -167,6 +167,26 @@ func (engine *Engine) GetStudentCourseScore(studentHumanID, courseID int) *int {
 	return score
 }
 
+// GetStudentHumanIDsByCourseID 获取参与学习courseID课程的学生自然人编号。
+func (engine *Engine) GetStudentHumanIDsByCourseID(courseID int) []int {
+	query := `select "StudentHumanID" from "StudentAttendsCourse" where "CourseID"=:1`
+	rows, err := engine.db.Query(query, courseID)
+	if err != nil {
+		Trace(err, query, courseID)
+	}
+	defer rows.Close()
+
+	studentHumanIDs := []int{}
+	for rows.Next() {
+		var studentHumanID int
+		if err := rows.Scan(&studentHumanID); err != nil {
+			Trace(err, query)
+		}
+		studentHumanIDs = append(studentHumanIDs, studentHumanID)
+	}
+	return studentHumanIDs
+}
+
 // GetTeacherHumanIDsByCourseID 获取courseID课程参与教师的自然人编号。
 func (engine *Engine) GetTeacherHumanIDsByCourseID(courseID int) []int {
 	query := `select "TeacherHumanID" from "TeacherTeachsCourse" where "CourseID"=:1`

@@ -98,6 +98,27 @@ where "StudentNumber"=:1`
 	return &info
 }
 
+// GetStudentInfoByStudentHumanID 获取对应自然人编号的学生的信息。
+func (engine *Engine) GetStudentInfoByStudentHumanID(id int) *StudentInfo {
+	query := `select "HumanID", "CollegeID", "SpecialtyID", "ClassID", 
+"CollegeName", "SpecialtyName", "Grade", "ClassCode", 
+"Name", "Sex", "Birthday", "Identity", "Notes", "PasswordHash",
+"StudentNumber", "AdmissionDate", "GraduationDate", "StudentDegree", "YearOfSchool", "Status"
+from "StudentInfo"
+where "HumanID"=:1`
+	row := engine.db.QueryRow(query, id)
+
+	var info StudentInfo
+	if err := row.Scan(&info.HumanID, &info.CollegeID, &info.SpecialtyID, &info.ClassID,
+		&info.CollegeName, &info.SpecialtyName, &info.Grade, &info.ClassCode,
+		&info.Name, &info.Sex, &info.Birthday, &info.Identity, &info.Notes, &info.PasswordHash,
+		&info.StudentNumber, &info.AdmissionDate, &info.GraduationDate, &info.StudentDegree, &info.YearOfSchool, &info.Status); err != nil {
+		Trace(err, query, id)
+		return nil
+	}
+	return &info
+}
+
 // GetStudentInfo 返回学生信息。
 func (engine *Engine) GetStudentInfo() []StudentInfo {
 	query := `select "HumanID", "CollegeID", "SpecialtyID", "ClassID", 

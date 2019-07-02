@@ -51,6 +51,23 @@ func (engine *Engine) GetReadCourseEndpoint() gin.HandlerFunc {
 			courseInfo["address"] = course.Address
 			courseInfo["class"] = course.RestrictClass
 
+			courseInfo["students"] = []gin.H{}
+			studentHumanIDs := engine.GetStudentHumanIDsByCourseID(course.CourseID)
+			for _, id := range studentHumanIDs {
+				info := engine.GetStudentInfoByStudentHumanID(id)
+
+				studentInfo := make(gin.H)
+				studentInfo["college"] = info.CollegeName
+				studentInfo["specialty"] = info.SpecialtyName
+				studentInfo["grade"] = strconv.Itoa(info.Grade)
+				studentInfo["class"] = strconv.Itoa(info.ClassCode)
+				studentInfo["name"] = info.Name
+				studentInfo["studentId"] = fmt.Sprintf("%10d", info.StudentNumber)
+				studentInfo["sex"] = info.Sex
+
+				courseInfo["students"] = append(courseInfo["students"].([]gin.H), studentInfo)
+			}
+
 			response["data"] = append(response["data"].([]gin.H), courseInfo)
 		}
 

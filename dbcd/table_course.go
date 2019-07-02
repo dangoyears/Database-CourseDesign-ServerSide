@@ -258,6 +258,27 @@ func (engine *Engine) AddCourseForClass(courseNumber, classID int) {
 	}
 }
 
+// AddCourseForStudent 为班级添加课程。
+func (engine *Engine) AddCourseForStudent(courseNumber, studentNumber int) {
+	course := engine.GetCourseByCourseNumber(courseNumber)
+	if course == nil {
+		Trace("未找到courseNumber对应的课程：" + strconv.Itoa(courseNumber))
+		return
+	}
+
+	student := engine.GetStudentByStudentNubmer(studentNumber)
+	if student == nil {
+		Trace("未找到studentNumber对应的课程：" + strconv.Itoa(studentNumber))
+		return
+	}
+
+	query := `insert into "StudentAttendsCourse" ("CourseID", "StudentHumanID") values (:1, :2)`
+	_, err := engine.db.Exec(query, course.CourseID, student.HumanID)
+	if err != nil {
+		Trace(err, query, course.CourseID, student.HumanID)
+	}
+}
+
 // RemoveCourseForClass 为班级删除课程。
 func (engine *Engine) RemoveCourseForClass(courseNumber, classID int) {
 	course := engine.GetCourseByCourseNumber(courseNumber)

@@ -116,6 +116,7 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/delete/class", []string{"admin"}, engine.GetDeleteClassEndpoint())
 	engine.BindRoute("/delete/both", []string{"admin"}, engine.GetDeleteBothEndpoint())
 	engine.BindRoute("/delete/course", []string{"admin", "teacher"}, engine.GetDeleteCourseEndpoint())
+	engine.BindRoute("/cancel/course", []string{"admin", "teacher", "student"}, engine.GetCancelCourseEndpoint())
 }
 
 // establishGateKeeper 建立用户状态管理器。

@@ -296,6 +296,25 @@ func (engine *Engine) RemoveCourseForClass(courseNumber, classID int) {
 	}
 }
 
+// RemoveCourseForStudent 为学生删除课程。
+func (engine *Engine) RemoveCourseForStudent(courseNumber, studentNumber int) {
+	course := engine.GetCourseByCourseNumber(courseNumber)
+	if course == nil {
+		Trace("未找到courseNumber对应的课程：" + strconv.Itoa(courseNumber))
+	}
+
+	student := engine.GetStudentByStudentNubmer(studentNumber)
+	if student == nil {
+		Trace("未找到" + strconv.Itoa(studentNumber) + "学号的学生。")
+	}
+
+	query := `delete from "StudentAttendsCourse" where "CourseID"=:1 and "StudentHumanID"=:2`
+	_, err := engine.db.Exec(query, course.CourseID, student.HumanID)
+	if err != nil {
+		Trace(err, query, course.CourseID, student.HumanID)
+	}
+}
+
 // RemoveAllTeacher 移除除课程负责人以外的所有教师。
 func (engine *Engine) RemoveAllTeacher(courseNumber int) {
 	course := engine.GetCourseByCourseNumber(courseNumber)

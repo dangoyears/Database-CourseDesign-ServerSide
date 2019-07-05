@@ -111,7 +111,7 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/write/student", []string{"admin"}, engine.GetWriteStudentEndpoint())
 	engine.BindRoute("/write/course", []string{"admin", "teacher"}, engine.GetWriteCourseEndpoint())
 
-	engine.BindRoute("/register/course", []string{"admin", "teacher"}, engine.GetRegisterCourseEndpoint())
+	engine.BindRoute("/register/course", []string{"admin", "teacher", "student"}, engine.GetRegisterCourseEndpoint())
 
 	engine.BindRoute("/delete/class", []string{"admin"}, engine.GetDeleteClassEndpoint())
 	engine.BindRoute("/delete/both", []string{"admin"}, engine.GetDeleteBothEndpoint())

@@ -92,6 +92,23 @@ func (engine *Engine) GetReadStudentOneEndpoint() gin.HandlerFunc {
 						courseInfo["teachers"] = append(courseInfo["teachers"].([]string), engine.GetHumanByID(humanID).Name)
 					}
 
+					courseInfo["students"] = []gin.H{}
+					studentHumanIDs := engine.GetStudentHumanIDsByCourseID(course.CourseID)
+					for _, id := range studentHumanIDs {
+						info := engine.GetStudentInfoByStudentHumanID(id)
+
+						studentInfo := make(gin.H)
+						studentInfo["college"] = info.CollegeName
+						studentInfo["specialty"] = info.SpecialtyName
+						studentInfo["grade"] = strconv.Itoa(info.Grade)
+						studentInfo["class"] = strconv.Itoa(info.ClassCode)
+						studentInfo["name"] = info.Name
+						studentInfo["studentId"] = fmt.Sprintf("%10d", info.StudentNumber)
+						studentInfo["sex"] = info.Sex
+
+						courseInfo["students"] = append(courseInfo["students"].([]gin.H), studentInfo)
+					}
+
 					courseInfo["courseLeader"] = ""
 					if course.LeadTeacherHumanID != nil {
 						courseInfo["courseLeader"] = engine.GetHumanByID(*course.LeadTeacherHumanID).Name

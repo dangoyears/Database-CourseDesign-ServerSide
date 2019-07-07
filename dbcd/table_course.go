@@ -268,7 +268,7 @@ func (engine *Engine) AddCourseForStudent(courseNumber, studentNumber int) {
 
 	student := engine.GetStudentByStudentNubmer(studentNumber)
 	if student == nil {
-		Trace("未找到studentNumber对应的课程：" + strconv.Itoa(studentNumber))
+		Trace("未找到studentNumber对应的学生：" + strconv.Itoa(studentNumber))
 		return
 	}
 
@@ -276,6 +276,27 @@ func (engine *Engine) AddCourseForStudent(courseNumber, studentNumber int) {
 	_, err := engine.db.Exec(query, course.CourseID, student.HumanID)
 	if err != nil {
 		Trace(err, query, course.CourseID, student.HumanID)
+	}
+}
+
+// UpdateCourseStudentScore 更新学生指定课程的分数。
+func (engine *Engine) UpdateCourseStudentScore(courseNumber, studentNumber, score int) {
+	course := engine.GetCourseByCourseNumber(courseNumber)
+	if course == nil {
+		Trace("未找到courseNumber对应的课程：" + strconv.Itoa(courseNumber))
+		return
+	}
+
+	student := engine.GetStudentByStudentNubmer(studentNumber)
+	if student == nil {
+		Trace("未找到studentNumber对应的学生：" + strconv.Itoa(studentNumber))
+		return
+	}
+
+	query := `update "StudentAttendsCourse" set "Score"=:1 where "CourseID"=:2 and "StudentHumanID"=:3`
+	_, err := engine.db.Exec(query, score, course.CourseID, student.HumanID)
+	if err != nil {
+		Trace(err, query, score, course.CourseID, student.HumanID)
 	}
 }
 

@@ -1,8 +1,0 @@
-登陆
-http://localhost:12323/login?type=admin&user=dangoyears&pass=dangoyears
-
-创建教师
-http://localhost:12323/write/teacher?token=<TOKEN>&college=%E4%B8%AD%E5%8D%8E%E5%A4%A7%E5%AD%A6&name=%E5%BC%A0%E4%B8%89%E4%B8%B0&jobId=443&sex=%E7%94%B7&education=%E5%8D%9A%E5%A3%AB%E5%90%8E&graduation=%E5%8C%97%E4%BA%AC&birthday=1998-12-14&idCard=123456789012333333&password=hhh&status=%E6%99%AE%E9%80%9A%E6%95%99%E5%B8%88
-
-创建学生
-http://localhost:12323/write/student?token=<TOKEN>&college=%E7%A5%9E%E5%A5%87%E5%9B%BD%E5%BA%A6&specialty=%E6%B7%B1%E5%9C%B3&grade=17&class=21&name=%E7%A5%9E%E5%A5%87%E4%BA%BA&studentId=773&status=zi&sex=%E5%A5%B3&birthday=1982-3-23&idCard=somerand&password=kkk&yearSystem=4

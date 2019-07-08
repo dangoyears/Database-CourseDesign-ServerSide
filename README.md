@@ -3,8 +3,6 @@
 [![Build Status](https://travis-ci.org/dangoyears/Database-CourseDesign-ServerSide.svg?branch=master)](https://travis-ci.org/dangoyears/Database-CourseDesign-ServerSide)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dangoyears/Database-CourseDesign-ServerSide)](https://goreportcard.com/report/github.com/dangoyears/Database-CourseDesign-ServerSide)
 
-**此文档已过时！** 此文档尚不能及时更新。
-
 ## 先决条件
 
 若在服务器上部署此代码，则需满足以下先决条件：
@@ -16,10 +14,10 @@
 
 ## 部署
 
-@TODO 补充部署过程
-
 1. `go get github.com/dangoyears/Database-CourseDesign-ServerSide`
-2. 将`config.go.example`重命名为`config.go`，并根据实际情况修改文件中的信息。
+2. 将`config.example.yaml`重命名为`config.yaml`并正确配置。
+
+## 其他提示
 
 ### 使用Nginx设置反向代理
 
@@ -33,15 +31,13 @@ server {
 }
 ```
 
-## 启动和终止
+### 启动和终止
 
 ```sh
 $ netstat -ap | grep 12323
 tcp        0      0 127.0.0.1:12323         0.0.0.0:*               LISTEN      4639/dbcd
 $ kill 4639
 ```
-
-## 开发细节
 
 ### 关于Oracle SQL的占位符
 

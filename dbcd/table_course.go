@@ -101,7 +101,7 @@ func (engine *Engine) GetCourseByTeacherNumber(teacherNumber int) []Course {
 
 		var course Course
 		query := `select "CourseID", "LeadTeacherHumanID", "CourseName", "CourseNumber", "Credits", "CourseProperty", "Accommodate", "Time", "Address", "RestrictClass" 
-	from "Course" where "CourseID"=:1`
+from "Course" where "CourseID"=:1`
 		row := engine.db.QueryRow(query, courseID)
 
 		if err := row.Scan(&course.CourseID, &course.LeadTeacherHumanID, &course.CourseName, &course.CourseNumber,
@@ -141,7 +141,7 @@ func (engine *Engine) GetCourseByStudentNumber(studentNumber int) []Course {
 
 		var course Course
 		query := `select "CourseID", "LeadTeacherHumanID", "CourseName", "CourseNumber", "Credits", "CourseProperty", "Accommodate", "Time", "Address", "RestrictClass" 
-	from "Course" where "CourseID"=:1`
+from "Course" where "CourseID"=:1`
 		row := engine.db.QueryRow(query, courseID)
 
 		if err := row.Scan(&course.CourseID, &course.LeadTeacherHumanID, &course.CourseName, &course.CourseNumber,

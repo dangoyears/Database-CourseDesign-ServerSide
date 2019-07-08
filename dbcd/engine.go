@@ -98,25 +98,25 @@ func (engine *Engine) establishRouter() {
 	engine.BindRoute("/role", []string{}, engine.GetRoleEndpoint())
 	engine.BindRoute("/admin", []string{"admin"}, engine.GetAdminEndpoint())
 
-	engine.BindRoute("/read/college", []string{"admin", "teacher"}, engine.GetReadCollegeEndpoint())
-	engine.BindRoute("/read/student", []string{"admin"}, engine.GetReadStudentEndpoint())
-	engine.BindRoute("/read/teacher", []string{"admin"}, engine.GetReadTeacherEndpoint())
-	engine.BindRoute("/read/course", []string{"admin", "student"}, engine.GetReadCourseEndpoint())
+	engine.BindRoute("/read/college", []string{}, engine.GetReadCollegeEndpoint())
+	engine.BindRoute("/read/student", []string{}, engine.GetReadStudentEndpoint())
+	engine.BindRoute("/read/teacher", []string{}, engine.GetReadTeacherEndpoint())
+	engine.BindRoute("/read/course", []string{}, engine.GetReadCourseEndpoint())
 
-	engine.BindRoute("/read/teacher/one", []string{"admin", "teacher"}, engine.GetReadTeacherOneEndpoint())
-	engine.BindRoute("/read/student/one", []string{"admin", "student"}, engine.GetReadStudentOneEndpoint())
+	engine.BindRoute("/read/teacher/one", []string{}, engine.GetReadTeacherOneEndpoint())
+	engine.BindRoute("/read/student/one", []string{}, engine.GetReadStudentOneEndpoint())
 
-	engine.BindRoute("/write/college", []string{"admin"}, engine.GetWriteCollegeEndpoint())
-	engine.BindRoute("/write/teacher", []string{"admin"}, engine.GetWriteTeacherEndpoint())
-	engine.BindRoute("/write/student", []string{"admin"}, engine.GetWriteStudentEndpoint())
-	engine.BindRoute("/write/course", []string{"admin", "teacher"}, engine.GetWriteCourseEndpoint())
-	engine.BindRoute("/set/score", []string{"admin", "teacher"}, engine.GetSetScoreEndpoint())
+	engine.BindRoute("/write/college", []string{}, engine.GetWriteCollegeEndpoint())
+	engine.BindRoute("/write/teacher", []string{}, engine.GetWriteTeacherEndpoint())
+	engine.BindRoute("/write/student", []string{}, engine.GetWriteStudentEndpoint())
+	engine.BindRoute("/write/course", []string{}, engine.GetWriteCourseEndpoint())
+	engine.BindRoute("/set/score", []string{}, engine.GetSetScoreEndpoint())
 
 	engine.BindRoute("/register/course", []string{"admin", "teacher", "student"}, engine.GetRegisterCourseEndpoint())
 
-	engine.BindRoute("/delete/class", []string{"admin"}, engine.GetDeleteClassEndpoint())
-	engine.BindRoute("/delete/both", []string{"admin"}, engine.GetDeleteBothEndpoint())
-	engine.BindRoute("/delete/course", []string{"admin", "teacher"}, engine.GetDeleteCourseEndpoint())
+	engine.BindRoute("/delete/class", []string{"admin", "teacher", "student"}, engine.GetDeleteClassEndpoint())
+	engine.BindRoute("/delete/both", []string{"admin", "teacher", "student"}, engine.GetDeleteBothEndpoint())
+	engine.BindRoute("/delete/course", []string{"admin", "teacher", "student"}, engine.GetDeleteCourseEndpoint())
 	engine.BindRoute("/cancel/course", []string{"admin", "teacher", "student"}, engine.GetCancelCourseEndpoint())
 }
 
